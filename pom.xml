@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.3.4</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<groupId>com.group1</groupId>
+	<artifactId>froggy</artifactId>
+	<version>0.0.1</version>
+	<packaging>pom</packaging>
+	<name>froggy</name>
+	<description>Froggy</description>
+
+
+
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+
+	<modules>
+		<module>froggy-api</module>
+		<module>froggy-app</module>
+		<module>froggy-jpa</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.group1</groupId>
+				<artifactId>froggy-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.group1</groupId>
+				<artifactId>froggy-jpa</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.group1</groupId>
+				<artifactId>froggy-app</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+</project>
