@@ -1,0 +1,36 @@
+name: Validate Maven Project
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+
+jobs:
+  validate:
+    name: Validate Maven Project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure Java
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # 4.7.1
+        with:
+          cache: maven
+          distribution: 'temurin'
+          java-version: 21
+
+      - name: Build and test
+        shell: bash
+        run: |
+          PROFILES=coverage
+          if [[ -n "${{ inputs.additional-profiles }}" ]]; then
+            PROFILES+=,${{ inputs.additional-profiles }}
+          fi
+  
+          mvn -B -fae -Dmaven.source.skip=true clean verify -P "${PROFILES}"
