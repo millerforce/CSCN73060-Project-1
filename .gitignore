@@ -25,3 +25,7 @@ application-dev.yaml
 application-deployed.yaml
 
 logs
+
+web/node_modules/
+web/dist/
+web/.env
