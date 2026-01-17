@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://froggy-db:5432/froggydb
+    username: froggyuser
+    password: froggypassword
+logging:
+  file:
+    name: logs/${spring.application.name}.log
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB
+      max-history: 20
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM}.%i.gz
+server:
+  port: 8080

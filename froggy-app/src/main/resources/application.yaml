@@ -4,6 +4,7 @@ spring:
   profiles:
     active:
       - dev
+      - docker
   datasource:
     url:
     username:
@@ -32,8 +33,3 @@ spring:
 springdoc:
   swagger-ui:
     path: /swagger
-
-
-cors:
-  urls: https://froggy.the-hero.dev, http://localhost:7010
-  methods: GET, POST, DELETE, PUT, PATCH, OPTIONS

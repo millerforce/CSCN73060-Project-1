@@ -23,3 +23,5 @@ target/
 ### Secrets
 application-dev.yaml
 application-deployed.yaml
+
+logs

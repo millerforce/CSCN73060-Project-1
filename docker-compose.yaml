@@ -1,0 +1,29 @@
+services:
+  froggy-db:
+    image: postgres:14.2-alpine
+    container_name: froggy-database
+    environment:
+      POSTGRES_USER: froggyuser
+      POSTGRES_PASSWORD: froggypassword
+      POSTGRES_DB: froggydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - froggy-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  froggy-app:
+    depends_on:
+      - froggy-db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: froggy:latest
+    container_name: froggy-app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  froggy-db-data:

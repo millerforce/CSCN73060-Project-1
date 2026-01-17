@@ -1,0 +1,15 @@
+### Editors ###
+.vscode/
+.idea
+*.iws
+*.iml
+*.ipr
+
+logs
+
+.git
+.gitattributes
+.github
+
+docs
+README.md
