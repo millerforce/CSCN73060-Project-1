@@ -1,4 +1,32 @@
+create extension if not exists pgcrypto;
 
+create table account(
+    id uuid primary key default gen_random_uuid(),
+    username text not null unique,
+    hashed_password text not null,
+    created_at timestamp not null
+);
+create index idx_account_username on account (username);
+
+create sequence session_id_seq start 1000 increment 1;
+create table session(
+    token text not null,
+    account_id uuid not null,
+    created_at timestamp not null,
+    foreign key (account_id)
+        references account (id),
+    primary key (token, account_id)
+);
+
+create table post(
+    id uuid primary key default gen_random_uuid(),
+    account_id uuid not null,
+    content text not null,
+    number_of_likes bigint not null,
+    created_at timestamp not null,
+    foreign key (account_id)
+        references account (id)
+);
 
 ----------------------------------------
 ------------ Quartz tables -------------

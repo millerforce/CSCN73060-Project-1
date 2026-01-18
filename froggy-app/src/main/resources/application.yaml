@@ -3,8 +3,8 @@ spring:
     name: froggy
   profiles:
     active:
-      - dev
       - docker
+      - dev
   datasource:
     url:
     username:
