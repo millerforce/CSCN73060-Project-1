@@ -40,12 +40,16 @@ public class PostController {
     @Operation(summary = "Get a list of Posts")
     @ApiResponse(responseCode = "200", description = "Posts retrieved successfully")
     List<Post> getPosts(
+        @RequestHeader(COOKIE_HEADER)
+        @NotNull(message = "Cookie header with session is required")
+        @NotBlank(message = "Cookie header cannot be blank")
+        String cookie,
         @RequestParam(defaultValue = "10")
         @Positive(message = "Max results must be positive")
         @Max(value = 100, message = "Max results cannot exceed 100")
         int maxResults
     ) {
-        return postService.getPosts(maxResults);
+        return postService.getPosts(cookie, maxResults);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -79,7 +83,7 @@ public class PostController {
         @PathVariable @NotNull(message = "Post ID is required") UUID postId,
         @RequestBody @NotNull(message = "Post data is required") @Valid PostUpload postUpload
     ) {
-        return null;
+        return postService.editPost(cookie, postId, postUpload);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -97,7 +101,7 @@ public class PostController {
         String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId
     ) {
-
+        postService.deletePost(cookie, postId);
     }
 
     @PutMapping("/{postId}")
@@ -113,6 +117,6 @@ public class PostController {
         String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId
     ) {
-        return null;
+        return postService.likePost(cookie, postId);
     }
 }

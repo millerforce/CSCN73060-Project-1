@@ -109,6 +109,17 @@ public class AuthorizationService {
             .orElseThrow(() -> new InvalidCredentialsException("Invalid token"));
     }
 
+    public boolean isValidSession(String cookie) {
+        if (cookie == null) {
+            return false;
+        }
+        Session session = parseSessionCookie(cookie);
+        if (session == null) {
+            return false;
+        }
+        return sessionRepository.sessionExists(session.accountId(), session.token());
+    }
+
     private static String sessionCookie(Session session) {
         return CookieBuilder.of(SESSION_COOKIE, session.accountId() + ":" + session.token())
             .withPath("/")

@@ -2,9 +2,12 @@ package com.group1.froggy.app.services;
 
 import com.group1.froggy.api.post.Post;
 import com.group1.froggy.api.post.PostUpload;
+import com.group1.froggy.app.exceptions.IllegalActionException;
+import com.group1.froggy.app.exceptions.InvalidCredentialsException;
 import com.group1.froggy.jpa.account.session.SessionJpa;
 import com.group1.froggy.jpa.post.PostJpa;
 import com.group1.froggy.jpa.post.PostRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +25,11 @@ public class PostService {
     private final AuthorizationService authorizationService;
     private final PostRepository postRepository;
 
-    public List<Post> getPosts(Integer lastNPosts) {
+    public List<Post> getPosts(String cookie, Integer lastNPosts) {
+        if (!authorizationService.isValidSession(cookie)) {
+            throw new InvalidCredentialsException("Invalid session cookie");
+        }
+
         return postRepository.findLatestPosts(lastNPosts)
             .stream()
             .map(PostJpa::toPost)
@@ -40,11 +47,31 @@ public class PostService {
     }
 
     public Post editPost(String cookie, UUID postId, PostUpload postUpload) {
-        return null;
+        SessionJpa sessionJpa = authorizationService.validateSession(cookie);
+
+        PostJpa postJpa = postRepository.findById(postId)
+            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+        if (!postJpa.getAccount().getId().equals(sessionJpa.getAccount().getId())) {
+            throw new IllegalActionException("Only the author can delete the post");
+        }
+
+        postJpa.setContent(postUpload.content());
+
+        return postRepository.save(postJpa).toPost();
     }
 
     public void deletePost(String cookie, UUID postId) {
+        SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
+        PostJpa postJpa = postRepository.findById(postId)
+            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+        if (!postJpa.getAccount().getId().equals(sessionJpa.getAccount().getId())) {
+            throw new IllegalActionException("Only the author can delete the post");
+        }
+
+        postRepository.delete(postJpa);
     }
 
     public Post likePost(String cookie, UUID postId) {

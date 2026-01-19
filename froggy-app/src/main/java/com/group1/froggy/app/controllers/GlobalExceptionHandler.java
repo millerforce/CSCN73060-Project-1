@@ -3,6 +3,7 @@ package com.group1.froggy.app.controllers;
 import com.group1.froggy.api.error.ProblemDetailFactory;
 import com.group1.froggy.api.error.ValidationDetail;
 import com.group1.froggy.api.error.ValidationProcessor;
+import com.group1.froggy.app.exceptions.IllegalActionException;
 import com.group1.froggy.app.exceptions.InvalidCredentialsException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,6 +35,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ProblemDetail invalidCredentialsException(InvalidCredentialsException e) {
         // We could throw a 403 Forbidden here, but 401 Unauthorized hides the existence of the resource
         return ProblemDetailFactory.createProblemDetail(HttpStatus.UNAUTHORIZED, e);
+    }
+
+    @ExceptionHandler(IllegalActionException.class)
+    public ProblemDetail illegalActionException(IllegalActionException e) {
+        return ProblemDetailFactory.createProblemDetail(HttpStatus.FORBIDDEN, e);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
