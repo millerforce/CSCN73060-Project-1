@@ -1,8 +1,8 @@
 package com.group1.froggy.app.controllers;
 
 import com.group1.froggy.api.account.Account;
+import com.group1.froggy.api.account.AccountCredentials;
 import com.group1.froggy.api.account.AccountUpload;
-import com.group1.froggy.api.account.Session;
 import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
 import com.group1.froggy.app.services.AuthorizationService;
@@ -51,10 +51,9 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Account not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     ResponseEntity<Void> loginAccount(
-        @RequestParam @NotBlank(message = "Username is required") String username,
-        @RequestParam @NotBlank(message = "Password is required") String password
+        @RequestBody @NotNull(message = "Credentials are required") @Valid AccountCredentials credentials
     ) {
-        return authorizationService.loginAccount(username, password);
+        return authorizationService.loginAccount(credentials);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

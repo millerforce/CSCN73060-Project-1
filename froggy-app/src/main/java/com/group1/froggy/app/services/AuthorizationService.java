@@ -1,6 +1,7 @@
 package com.group1.froggy.app.services;
 
 import com.group1.froggy.api.account.Account;
+import com.group1.froggy.api.account.AccountCredentials;
 import com.group1.froggy.api.account.AccountUpload;
 import com.group1.froggy.api.account.Session;
 import com.group1.froggy.app.CookieBuilder;
@@ -45,11 +46,11 @@ public class AuthorizationService {
         return accountRepository.save(accountJpa).toAccount();
     }
 
-    public ResponseEntity<Void> loginAccount(String username, String password) {
-        AccountJpa accountJpa = accountRepository.findByUsername(username)
+    public ResponseEntity<Void> loginAccount(AccountCredentials credentials) {
+        AccountJpa accountJpa = accountRepository.findByUsername(credentials.username())
             .orElseThrow(() -> new EntityNotFoundException("Account with username does not exist"));
 
-        if (!passwordEncoder.matches(password, accountJpa.getHashedPassword())) {
+        if (!passwordEncoder.matches(credentials.password(), accountJpa.getHashedPassword())) {
             throw new InvalidCredentialsException("Invalid password");
         }
 
@@ -94,6 +95,18 @@ public class AuthorizationService {
         byte[] token = new byte[64];
         random.nextBytes(token);
         return Base64.getEncoder().encodeToString(token);
+    }
+
+    public SessionJpa validateSession(String cookie) {
+        if (cookie == null) {
+            throw new InvalidCredentialsException("No session cookie found");
+        }
+        Session session = parseSessionCookie(cookie);
+        if (session == null) {
+            throw new InvalidCredentialsException("No session cookie found");
+        }
+        return sessionRepository.findById(SessionJpa.createId(session.accountId(), session.token()))
+            .orElseThrow(() -> new InvalidCredentialsException("Invalid token"));
     }
 
     private static String sessionCookie(Session session) {

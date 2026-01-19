@@ -1,4 +1,4 @@
-package com.group1.froggy.jpa;
+package com.group1.froggy.jpa.post;
 
 import com.group1.froggy.api.post.Post;
 import com.group1.froggy.api.post.PostUpload;
