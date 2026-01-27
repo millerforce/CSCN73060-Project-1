@@ -30,5 +30,9 @@ public record Post(
 
     @Schema(description = "The timestamp when the post was created")
     @NonNull
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+
+    @Schema(description = "The timestamp when the post was last updated")
+    @NonNull
+    LocalDateTime updatedAt
 ) { }

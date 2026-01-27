@@ -5,10 +5,10 @@ import lombok.NonNull;
 
 @Schema(
     name = "PostUpload",
-    description = "Data required to create a new post."
+    description = "Data required to create or edit a post."
 )
-public record PostUpload(
-    @Schema(description = "The title of the post")
+public record PostContent(
+    @Schema(description = "The content of the post")
     @NonNull
     String content
 ) { }

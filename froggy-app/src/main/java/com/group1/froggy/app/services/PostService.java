@@ -1,18 +1,24 @@
 package com.group1.froggy.app.services;
 
 import com.group1.froggy.api.post.Post;
-import com.group1.froggy.api.post.PostUpload;
+import com.group1.froggy.api.post.PostContent;
 import com.group1.froggy.app.exceptions.IllegalActionException;
 import com.group1.froggy.app.exceptions.InvalidCredentialsException;
 import com.group1.froggy.jpa.account.session.SessionJpa;
 import com.group1.froggy.jpa.post.PostJpa;
 import com.group1.froggy.jpa.post.PostRepository;
+import com.group1.froggy.jpa.post.like.PostLikeJpa;
+import com.group1.froggy.jpa.post.like.PostLikeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,29 +30,48 @@ public class PostService {
 
     private final AuthorizationService authorizationService;
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
 
-    public List<Post> getPosts(String cookie, Integer lastNPosts) {
+    public List<Post> getPosts(String cookie, Integer lastNPosts, Integer offset) {
         if (!authorizationService.isValidSession(cookie)) {
             throw new InvalidCredentialsException("Invalid session cookie");
         }
 
-        return postRepository.findLatestPosts(lastNPosts)
-            .stream()
-            .map(PostJpa::toPost)
+        int size = (lastNPosts == null || lastNPosts <= 0) ? 10 : lastNPosts;
+        int skip = (offset == null || offset < 0) ? 0 : offset;
+
+        int page = skip / size;
+        int indexInPage = skip % size;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        List<PostJpa> pageContent = postRepository.findLatestPosts(pageable);
+
+        List<PostJpa> combined = new ArrayList<>(pageContent);
+
+        if (indexInPage != 0) {
+            Pageable nextPageable = PageRequest.of(page + 1, size, Sort.by("createdAt").descending());
+            List<PostJpa> nextPageContent = postRepository.findLatestPosts(nextPageable);
+            combined.addAll(nextPageContent);
+        }
+
+        return combined.stream()
+            .skip(indexInPage)
+            .limit(size)
+            .map(this::toPostWithLikes)
             .toList();
     }
 
-    public Post createPost(String cookie, PostUpload postUpload) {
+    public Post createPost(String cookie, PostContent postContent) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
-        PostJpa postJpa = PostJpa.create(sessionJpa.getAccount(), postUpload);
+        PostJpa postJpa = PostJpa.create(sessionJpa.getAccount(), postContent);
 
         postJpa = postRepository.save(postJpa);
 
-        return postJpa.toPost();
+        return toPostWithLikes(postJpa);
     }
 
-    public Post editPost(String cookie, UUID postId, PostUpload postUpload) {
+    public Post editPost(String cookie, UUID postId, PostContent postContent) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
         PostJpa postJpa = postRepository.findById(postId)
@@ -56,9 +81,9 @@ public class PostService {
             throw new IllegalActionException("Only the author can delete the post");
         }
 
-        postJpa.setContent(postUpload.content());
+        postJpa.setContent(postContent.content());
 
-        return postRepository.save(postJpa).toPost();
+        return toPostWithLikes(postRepository.save(postJpa));
     }
 
     public void deletePost(String cookie, UUID postId) {
@@ -71,11 +96,32 @@ public class PostService {
             throw new IllegalActionException("Only the author can delete the post");
         }
 
+        postLikeRepository.deleteAllByPost(postJpa);
         postRepository.delete(postJpa);
     }
 
     public Post likePost(String cookie, UUID postId) {
-        return null;
+        SessionJpa sessionJpa = authorizationService.validateSession(cookie);
+
+        PostJpa postJpa = postRepository.findById(postId)
+            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+
+        postLikeRepository.save(PostLikeJpa.create(postJpa, sessionJpa.getAccount()));
+
+        return toPostWithLikes(postJpa);
+    }
+
+    private Post toPostWithLikes(PostJpa postJpa) {
+        long likes = postLikeRepository.countByPost(postJpa);
+        return new Post(
+            postJpa.getId(),
+            postJpa.getAccount().toAccount(),
+            postJpa.getContent(),
+            likes,
+            postJpa.getCreatedAt(),
+            postJpa.getUpdatedAt()
+        );
     }
 
 }

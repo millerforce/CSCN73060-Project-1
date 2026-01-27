@@ -5,6 +5,7 @@ import com.group1.froggy.api.account.AccountCredentials;
 import com.group1.froggy.api.account.AccountUpload;
 import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
+import com.group1.froggy.app.auth.RequireSession;
 import com.group1.froggy.app.services.AuthorizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,11 +63,9 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "400", description = "Invalid fields provided")
     @ApiResponse(responseCode = "401", description = "Invalid credentials")
     @ApiResponse(responseCode = "404", description = "Account not found")
+    @RequireSession
     ResponseEntity<Void> logoutAccount(
-        @RequestHeader(COOKIE_HEADER)
-        @NotNull(message = "Cookie header with session is required")
-        @NotBlank(message = "Cookie header cannot be blank")
-        String cookie
+        @RequestHeader(COOKIE_HEADER) String cookie
     ) {
         return authorizationService.logoutAccount(cookie);
     }

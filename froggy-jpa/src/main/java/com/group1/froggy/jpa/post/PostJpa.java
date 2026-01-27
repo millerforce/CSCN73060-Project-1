@@ -1,7 +1,6 @@
 package com.group1.froggy.jpa.post;
 
-import com.group1.froggy.api.post.Post;
-import com.group1.froggy.api.post.PostUpload;
+import com.group1.froggy.api.post.PostContent;
 import com.group1.froggy.jpa.account.AccountJpa;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,25 +34,23 @@ public class PostJpa {
     @NonNull
     private String content;
 
-    @Builder.Default
     @Column
     @NonNull
-    private Long numberOfLikes = 0L;
+    private LocalDateTime createdAt;
 
-    @Builder.Default
     @Column
     @NonNull
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
 
-    public static PostJpa create(AccountJpa account, PostUpload postUpload) {
+    public static PostJpa create(AccountJpa account, PostContent postContent) {
+        LocalDateTime createdAt = LocalDateTime.now();
+
         return PostJpa.builder()
             .account(account)
-            .content(postUpload.content())
+            .content(postContent.content())
+            .createdAt(createdAt)
+            .updatedAt(createdAt)
             .build();
-    }
-
-    public Post toPost() {
-        return new Post(id, account.toAccount(), content, numberOfLikes, createdAt);
     }
 
     @Override

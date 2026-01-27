@@ -8,7 +8,6 @@ create table account(
 );
 create index idx_account_username on account (username);
 
-create sequence session_id_seq start 1000 increment 1;
 create table session(
     token text not null,
     account_id uuid not null,
@@ -22,11 +21,23 @@ create table post(
     id uuid primary key default gen_random_uuid(),
     account_id uuid not null,
     content text not null,
-    number_of_likes bigint not null,
     created_at timestamp not null,
+    updated_at timestamp not null,
     foreign key (account_id)
         references account (id)
 );
+
+create table post_like (
+    post_id uuid not null,
+    account_id uuid not null,
+    foreign key (post_id)
+        references post (id),
+    foreign key (account_id)
+        references account (id),
+    primary key (post_id, account_id)
+);
+create index idx_post_like_post_id on post_like (post_id);
+create index idx_post_like_account_id on post_like (account_id);
 
 ----------------------------------------
 ------------ Quartz tables -------------

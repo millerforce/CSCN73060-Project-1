@@ -3,7 +3,8 @@ package com.group1.froggy.app.controllers;
 import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
 import com.group1.froggy.api.post.Post;
-import com.group1.froggy.api.post.PostUpload;
+import com.group1.froggy.api.post.PostContent;
+import com.group1.froggy.app.auth.RequireSession;
 import com.group1.froggy.app.services.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,9 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ import static com.group1.froggy.app.controllers.AuthorizationController.COOKIE_H
 @RequestMapping("/post")
 @Tag(name = "Post Controller", description = "Handles all operations regarding Posts")
 @RequiredArgsConstructor
+@RequireSession
 public class PostController {
 
     private final PostService postService;
@@ -40,16 +42,18 @@ public class PostController {
     @Operation(summary = "Get a list of Posts")
     @ApiResponse(responseCode = "200", description = "Posts retrieved successfully")
     List<Post> getPosts(
-        @RequestHeader(COOKIE_HEADER)
-        @NotNull(message = "Cookie header with session is required")
-        @NotBlank(message = "Cookie header cannot be blank")
-        String cookie,
-        @RequestParam(defaultValue = "10")
+        @RequestHeader(COOKIE_HEADER) String cookie,
+
+        @RequestParam(required = false, defaultValue = "10")
         @Positive(message = "Max results must be positive")
         @Max(value = 100, message = "Max results cannot exceed 100")
-        int maxResults
+        Integer maxResults,
+
+        @RequestParam(required = false, defaultValue = "0")
+        @PositiveOrZero(message = "Offset must be positive")
+        Integer offset
     ) {
-        return postService.getPosts(cookie, maxResults);
+        return postService.getPosts(cookie, maxResults, offset);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -59,13 +63,10 @@ public class PostController {
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Post createPost(
-        @RequestHeader(COOKIE_HEADER)
-        @NotNull(message = "Cookie header with session is required")
-        @NotBlank(message = "Cookie header cannot be blank")
-        String cookie,
-        @RequestBody @NotNull(message = "Post data is required") @Valid PostUpload postUpload
+        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestBody @NotNull(message = "Post data is required") @Valid PostContent postContent
     ) {
-        return postService.createPost(cookie, postUpload);
+        return postService.createPost(cookie, postContent);
     }
 
     @PatchMapping("/{postId}")
@@ -76,14 +77,11 @@ public class PostController {
     @ApiResponse(responseCode = "403", description = "Only the author can edit the post", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Post not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Post editPost(
-        @RequestHeader(COOKIE_HEADER)
-        @NotNull(message = "Cookie header with session is required")
-        @NotBlank(message = "Cookie header cannot be blank")
-        String cookie,
+        @RequestHeader(COOKIE_HEADER) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId,
-        @RequestBody @NotNull(message = "Post data is required") @Valid PostUpload postUpload
+        @RequestBody @NotNull(message = "Post data is required") @Valid PostContent postContent
     ) {
-        return postService.editPost(cookie, postId, postUpload);
+        return postService.editPost(cookie, postId, postContent);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -95,10 +93,7 @@ public class PostController {
     @ApiResponse(responseCode = "403", description = "Only the author can delete the post", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Post not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     void deletePost(
-        @RequestHeader(COOKIE_HEADER)
-        @NotNull(message = "Cookie header with session is required")
-        @NotBlank(message = "Cookie header cannot be blank")
-        String cookie,
+        @RequestHeader(COOKIE_HEADER) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId
     ) {
         postService.deletePost(cookie, postId);
@@ -111,10 +106,7 @@ public class PostController {
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Post not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Post likePost(
-        @RequestHeader(COOKIE_HEADER)
-        @NotNull(message = "Cookie header with session is required")
-        @NotBlank(message = "Cookie header cannot be blank")
-        String cookie,
+        @RequestHeader(COOKIE_HEADER) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId
     ) {
         return postService.likePost(cookie, postId);
