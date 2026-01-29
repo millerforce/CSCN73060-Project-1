@@ -1,7 +1,7 @@
 package com.group1.froggy.app.services;
 
 import com.group1.froggy.api.post.Post;
-import com.group1.froggy.api.post.Content;
+import com.group1.froggy.api.Content;
 import com.group1.froggy.app.exceptions.IllegalActionException;
 import com.group1.froggy.app.exceptions.InvalidCredentialsException;
 import com.group1.froggy.jpa.account.session.SessionJpa;
@@ -119,6 +119,7 @@ public class PostService {
             postJpa.getAccount().toAccount(),
             postJpa.getContent(),
             likes,
+            0L,
             postJpa.getCreatedAt(),
             postJpa.getUpdatedAt()
         );

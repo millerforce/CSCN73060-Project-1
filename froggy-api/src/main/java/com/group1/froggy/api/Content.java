@@ -1,4 +1,4 @@
-package com.group1.froggy.api.post;
+package com.group1.froggy.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.NonNull;

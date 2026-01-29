@@ -3,7 +3,7 @@ package com.group1.froggy.app.controllers;
 import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
 import com.group1.froggy.api.post.Post;
-import com.group1.froggy.api.post.Content;
+import com.group1.froggy.api.Content;
 import com.group1.froggy.app.auth.RequireSession;
 import com.group1.froggy.app.services.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +40,8 @@ public class PostController {
     @GetMapping("/posts")
     @Operation(summary = "Get a list of Posts")
     @ApiResponse(responseCode = "200", description = "Posts retrieved successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     List<Post> getPosts(
         @RequestHeader(COOKIE_HEADER) String cookie,
 

@@ -1,6 +1,6 @@
 package com.group1.froggy.jpa.post.comment;
 
-import com.group1.froggy.api.post.Content;
+import com.group1.froggy.api.Content;
 import com.group1.froggy.jpa.account.AccountJpa;
 import com.group1.froggy.jpa.post.PostJpa;
 import jakarta.persistence.*;

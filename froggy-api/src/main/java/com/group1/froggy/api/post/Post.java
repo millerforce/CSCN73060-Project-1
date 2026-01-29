@@ -28,6 +28,10 @@ public record Post(
     @NonNull
     Long numberOfLikes,
 
+    @Schema(description = "The number of comments on the post")
+    @NonNull
+    Long numberOfComments,
+
     @Schema(description = "The timestamp when the post was created")
     @NonNull
     LocalDateTime createdAt,
