@@ -1,7 +1,7 @@
 package com.group1.froggy.app.services;
 
 import com.group1.froggy.api.post.Post;
-import com.group1.froggy.api.post.PostContent;
+import com.group1.froggy.api.post.Content;
 import com.group1.froggy.app.exceptions.IllegalActionException;
 import com.group1.froggy.app.exceptions.InvalidCredentialsException;
 import com.group1.froggy.jpa.account.session.SessionJpa;
@@ -61,17 +61,17 @@ public class PostService {
             .toList();
     }
 
-    public Post createPost(String cookie, PostContent postContent) {
+    public Post createPost(String cookie, Content content) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
-        PostJpa postJpa = PostJpa.create(sessionJpa.getAccount(), postContent);
+        PostJpa postJpa = PostJpa.create(sessionJpa.getAccount(), content);
 
         postJpa = postRepository.save(postJpa);
 
         return toPostWithLikes(postJpa);
     }
 
-    public Post editPost(String cookie, UUID postId, PostContent postContent) {
+    public Post editPost(String cookie, UUID postId, Content content) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
         PostJpa postJpa = postRepository.findById(postId)
@@ -81,7 +81,7 @@ public class PostService {
             throw new IllegalActionException("Only the author can delete the post");
         }
 
-        postJpa.setContent(postContent.content());
+        postJpa.setContent(content.content());
 
         return toPostWithLikes(postRepository.save(postJpa));
     }

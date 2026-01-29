@@ -39,6 +39,21 @@ create table post_like (
 create index idx_post_like_post_id on post_like (post_id);
 create index idx_post_like_account_id on post_like (account_id);
 
+create table comment(
+    id uuid primary key default gen_random_uuid(),
+    post_id uuid not null,
+    account_id uuid not null,
+    content text not null,
+    created_at timestamp not null,
+    updated_at timestamp not null,
+    foreign key (post_id)
+        references post (id),
+    foreign key (account_id)
+        references account (id)
+);
+create index idx_comment_post_id on comment (post_id);
+create index idx_comment_account_id on comment (account_id);
+
 ----------------------------------------
 ------------ Quartz tables -------------
 ----------------------------------------

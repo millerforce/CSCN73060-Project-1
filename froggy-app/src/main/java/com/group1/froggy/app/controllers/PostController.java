@@ -3,11 +3,10 @@ package com.group1.froggy.app.controllers;
 import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
 import com.group1.froggy.api.post.Post;
-import com.group1.froggy.api.post.PostContent;
+import com.group1.froggy.api.post.Content;
 import com.group1.froggy.app.auth.RequireSession;
 import com.group1.froggy.app.services.PostService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,38 +59,38 @@ public class PostController {
     @PostMapping
     @Operation(summary = "Create a new Post")
     @ApiResponse(responseCode = "201", description = "Post created successfully")
-    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
-    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Post createPost(
         @RequestHeader(COOKIE_HEADER) String cookie,
-        @RequestBody @NotNull(message = "Post data is required") @Valid PostContent postContent
+        @RequestBody @NotNull(message = "Post data is required") @Valid Content content
     ) {
-        return postService.createPost(cookie, postContent);
+        return postService.createPost(cookie, content);
     }
 
     @PatchMapping("/{postId}")
     @Operation(summary = "Edit an existing Post")
     @ApiResponse(responseCode = "200", description = "Post edited successfully")
-    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
-    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    @ApiResponse(responseCode = "403", description = "Only the author can edit the post", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    @ApiResponse(responseCode = "404", description = "Post not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "403", description = "Only the author can edit the post", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Post editPost(
         @RequestHeader(COOKIE_HEADER) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId,
-        @RequestBody @NotNull(message = "Post data is required") @Valid PostContent postContent
+        @RequestBody @NotNull(message = "Post data is required") @Valid Content content
     ) {
-        return postService.editPost(cookie, postId, postContent);
+        return postService.editPost(cookie, postId, content);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{postId}")
     @Operation(summary = "Delete an existing Post")
     @ApiResponse(responseCode = "204", description = "Post deleted successfully")
-    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
-    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    @ApiResponse(responseCode = "403", description = "Only the author can delete the post", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    @ApiResponse(responseCode = "404", description = "Post not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "403", description = "Only the author can delete the post", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     void deletePost(
         @RequestHeader(COOKIE_HEADER) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId
@@ -102,9 +101,9 @@ public class PostController {
     @PutMapping("/{postId}")
     @Operation(summary = "Like a Post")
     @ApiResponse(responseCode = "200", description = "Post liked successfully")
-    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
-    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    @ApiResponse(responseCode = "404", description = "Post not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Post likePost(
         @RequestHeader(COOKIE_HEADER) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId

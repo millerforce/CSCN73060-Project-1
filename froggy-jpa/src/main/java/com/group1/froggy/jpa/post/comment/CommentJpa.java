@@ -1,15 +1,13 @@
-package com.group1.froggy.jpa.post;
+package com.group1.froggy.jpa.post.comment;
 
 import com.group1.froggy.api.post.Content;
 import com.group1.froggy.jpa.account.AccountJpa;
-import com.group1.froggy.jpa.post.comment.CommentJpa;
+import com.group1.froggy.jpa.post.PostJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -18,15 +16,20 @@ import java.util.UUID;
 @Entity
 @Builder
 @ToString
-@Table(name = "post")
+@Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostJpa {
+public class CommentJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Setter(AccessLevel.NONE)
     private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    @NonNull
+    private PostJpa post;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
@@ -45,15 +48,11 @@ public class PostJpa {
     @NonNull
     private LocalDateTime updatedAt;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private List<CommentJpa> comments = new ArrayList<>();
-
-    public static PostJpa create(AccountJpa account, Content content) {
+    public static CommentJpa create(PostJpa post, AccountJpa account, Content content) {
         LocalDateTime createdAt = LocalDateTime.now();
 
-        return PostJpa.builder()
+        return CommentJpa.builder()
+            .post(post)
             .account(account)
             .content(content.content())
             .createdAt(createdAt)
@@ -70,7 +69,7 @@ public class PostJpa {
             return false;
         }
 
-        PostJpa postJpa = (PostJpa) o;
+        CommentJpa postJpa = (CommentJpa) o;
         return id.equals(postJpa.id);
     }
 
