@@ -8,7 +8,7 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
     "paths": {
-    "@styles": ["./styles"]
+    "@styles": ["./styles/"]
   },
     /* Bundler mode */
     "moduleResolution": "bundler",

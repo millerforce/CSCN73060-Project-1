@@ -1,0 +1,19 @@
+
+.post-card{
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.author{
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.container{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
