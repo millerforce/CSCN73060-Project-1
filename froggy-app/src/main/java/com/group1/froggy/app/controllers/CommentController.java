@@ -6,6 +6,7 @@ import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
 import com.group1.froggy.app.auth.RequireSession;
 import com.group1.froggy.app.services.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +35,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    @Operation(summary = "Get all comments for a post", description = "Retrieves a list of comments associated with a specific post.")
     @ApiResponse(responseCode = "200", description = "Comments retrieved successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
@@ -47,6 +49,7 @@ public class CommentController {
         return commentService.getCommentsByPost(postId);
     }
 
+    @Operation(summary = "Create a new comment for a post", description = "Creates a new comment associated with a specific post. Requires authentication.")
     @ApiResponse(responseCode = "201", description = "Comment created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
@@ -69,6 +72,7 @@ public class CommentController {
         return commentService.createComment(cookie, postId, content);
     }
 
+    @Operation(summary = "Edit an existing comment", description = "Edits the content of an existing comment. Only the author of the comment can edit it. Requires authentication.")
     @ApiResponse(responseCode = "200", description = "Comment edited successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
@@ -90,6 +94,7 @@ public class CommentController {
         return commentService.editComment(cookie, commentId, content);
     }
 
+    @Operation(summary = "Delete an existing comment", description = "Deletes an existing comment. Only the author of the comment can delete it. Requires authentication.")
     @ApiResponse(responseCode = "204", description = "Comment deleted successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
@@ -107,6 +112,7 @@ public class CommentController {
         commentService.deleteComment(cookie, commentId);
     }
 
+    @Operation(summary = "Like a comment", description = "Likes a comment. Requires authentication.")
     @ApiResponse(responseCode = "200", description = "Comment liked successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
