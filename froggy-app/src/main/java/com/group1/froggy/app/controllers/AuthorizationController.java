@@ -56,6 +56,16 @@ public class AuthorizationController {
         return authorizationService.loginAccount(credentials);
     }
 
+    @GetMapping
+    @Operation(summary = "Get the current logged in Account via the session token cookie")
+    @ApiResponse(responseCode = "200", description = "Current account retrieved successfully")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    Account getCurrentAccount(
+        @RequestHeader(COOKIE_HEADER) String cookie
+    ) {
+        return authorizationService.getCurrentAccount(cookie);
+    }
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/logout")
     @Operation(summary = "Logout the account from the current session")

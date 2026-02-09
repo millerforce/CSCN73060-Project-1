@@ -90,6 +90,22 @@ public class AuthorizationService {
             .build();
     }
 
+    public Account getCurrentAccount(String cookie) {
+        if (cookie == null) {
+            throw new InvalidCredentialsException("No session cookie found");
+        }
+
+        Session session = parseSessionCookie(cookie);
+        if (session == null) {
+            throw new InvalidCredentialsException("No session cookie found");
+        }
+
+        SessionJpa sessionJpa = sessionRepository.findById(SessionJpa.createId(session.accountId(), session.token()))
+            .orElseThrow(() -> new InvalidCredentialsException("Invalid token"));
+
+        return sessionJpa.getAccount().toAccount();
+    }
+
     private String generateToken() {
         final SecureRandom random = new SecureRandom();
         byte[] token = new byte[64];
