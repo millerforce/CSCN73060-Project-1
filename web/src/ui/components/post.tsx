@@ -1,5 +1,5 @@
-import type { Post } from "../types/post.ts";
-import '../styles/post.css';
+import '../../styles/post.css';
+import type {Post} from "../../http/types/post.ts";
 
 export function PostCard(post: Post) {
     const {
@@ -10,6 +10,7 @@ export function PostCard(post: Post) {
     return (
         <div className="post-card">
             <div className="container">
+                <p hidden>{id}</p>
                 <div className="author">{author.username}</div>
                 <div className="date">{date}</div>
             </div>

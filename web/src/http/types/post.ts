@@ -5,7 +5,7 @@ export type PostUpload = {
 }
 
 export type Post = {
-    id: string;
+    id: number;
     author: Account;
     content: string;
     numberOfLikes: number;

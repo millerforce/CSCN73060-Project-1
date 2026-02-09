@@ -1,9 +1,9 @@
-import "@styles/App.css"
+import "@styles/app.css"
 import {createBrowserRouter} from "react-router";
-import HomePage from "./ui/pages/homePage.tsx";
+import HomePage from "./ui/pages/homePage";
 import {RouterProvider} from "react-router/dom";
-import LoginPage from "./ui/pages/loginPage.tsx";
-import AuthProvider from "./auth/authProvider.tsx";
+import LoginPage from "./ui/pages/loginPage";
+import AuthProvider from "./auth/authProvider";
 import {ToastContainer} from "react-toastify/unstyled";
 
 const router = createBrowserRouter([
