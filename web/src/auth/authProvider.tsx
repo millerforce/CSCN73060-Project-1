@@ -1,6 +1,6 @@
 import {createContext, useContext, useState} from "react";
 import * as React from "react";
-import type {AccountSession} from "../api/account.ts";
+import type {AccountSession} from "../http/types/account.ts";
 
 type AuthContextData = {
     user: AccountSession | null;
