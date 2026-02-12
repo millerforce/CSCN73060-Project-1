@@ -2,6 +2,7 @@ package com.group1.froggy.app.services;
 
 import com.group1.froggy.api.post.Post;
 import com.group1.froggy.api.Content;
+import com.group1.froggy.api.post.PostStats;
 import com.group1.froggy.app.exceptions.IllegalActionException;
 import com.group1.froggy.app.exceptions.InvalidCredentialsException;
 import com.group1.froggy.jpa.account.session.SessionJpa;
@@ -11,6 +12,7 @@ import com.group1.froggy.jpa.post.comment.CommentRepository;
 import com.group1.froggy.jpa.post.like.PostLikeJpa;
 import com.group1.froggy.jpa.post.like.PostLikeRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -114,6 +116,36 @@ public class PostService {
         postLikeRepository.save(PostLikeJpa.create(postJpa, sessionJpa.getAccount()));
 
         return toPostWithLikes(postJpa);
+    }
+
+    public PostStats getPostStats(String cookie, UUID postId) {
+        if (!authorizationService.isValidSession(cookie)) {
+            throw new InvalidCredentialsException("Invalid session cookie");
+        }
+
+        PostJpa postJpa = postRepository.findById(postId)
+            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+        long postLikes = postLikeRepository.countByPost(postJpa);
+        long numberOfComments = commentRepository.countByPostId(postJpa.getId());
+
+        return new PostStats(slowFibonacci(postLikes + numberOfComments));
+    }
+
+    private long slowFibonacci(long n) {
+        if (n <= 1) return n;
+        if (slowIsPrime(n)) {
+            return n;
+        }
+        return slowFibonacci(n - 1) + slowFibonacci(n - 2);
+    }
+
+    private boolean slowIsPrime(long num) {
+        if (num <= 1) return false;
+        for (long i = 2; i <= Math.sqrt(num); i++) {
+            if (num % i == 0) return false;
+        }
+        return true;
     }
 
     private Post toPostWithLikes(PostJpa postJpa) {
