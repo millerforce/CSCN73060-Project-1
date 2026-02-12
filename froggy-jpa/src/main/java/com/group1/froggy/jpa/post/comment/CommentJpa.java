@@ -1,6 +1,7 @@
 package com.group1.froggy.jpa.post.comment;
 
 import com.group1.froggy.api.Content;
+import com.group1.froggy.api.comment.Comment;
 import com.group1.froggy.jpa.account.AccountJpa;
 import com.group1.froggy.jpa.post.PostJpa;
 import jakarta.persistence.*;
@@ -12,7 +13,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
-@Setter
 @Entity
 @Builder
 @ToString
@@ -23,7 +23,6 @@ public class CommentJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Setter(AccessLevel.NONE)
     private UUID id;
 
     @ManyToOne
@@ -36,6 +35,7 @@ public class CommentJpa {
     @NonNull
     private AccountJpa account;
 
+    @Setter
     @Column
     @NonNull
     private String content;
@@ -44,6 +44,7 @@ public class CommentJpa {
     @NonNull
     private LocalDateTime createdAt;
 
+    @Setter
     @Column
     @NonNull
     private LocalDateTime updatedAt;

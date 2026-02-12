@@ -54,6 +54,18 @@ create table comment(
 create index idx_comment_post_id on comment (post_id);
 create index idx_comment_account_id on comment (account_id);
 
+create table comment_like (
+    comment_id uuid not null,
+    account_id uuid not null,
+    foreign key (comment_id)
+        references comment (id),
+    foreign key (account_id)
+        references account (id),
+    primary key (comment_id, account_id)
+);
+create index idx_comment_like_comment_id on comment_like (comment_id);
+create index idx_comment_like_account_id on comment_like (account_id);
+
 ----------------------------------------
 ------------ Quartz tables -------------
 ----------------------------------------
