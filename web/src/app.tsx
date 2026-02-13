@@ -5,10 +5,16 @@ import {RouterProvider} from "react-router/dom";
 import LoginPage from "./ui/pages/loginPage";
 import AuthProvider from "./auth/authProvider";
 import {ToastContainer} from "react-toastify/unstyled";
+import Layout from "./ui/pages/layout.tsx";
 
 const router = createBrowserRouter([
-    {path: "/", element: <HomePage/>},
-    {path: "/login", element: <LoginPage/>}
+    {
+        path: "/", Component: Layout,
+        children: [
+            {index: true, Component: HomePage},
+            {path: "login", Component: LoginPage}
+        ]
+    },
 ])
 
 const App = () => {

@@ -26,4 +26,11 @@ export default class AuthService {
             url: this.BASE_URL + "/logout"
         })
     }
+
+    public static async getAuth(): Promise<ApiResponse<Account>> {
+        return await apiRequest<Account>({
+            method: "GET",
+            url: this.BASE_URL
+        })
+    }
 }
