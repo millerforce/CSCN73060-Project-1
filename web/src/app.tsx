@@ -4,15 +4,17 @@ import HomePage from "./ui/pages/homePage";
 import {RouterProvider} from "react-router/dom";
 import LoginPage from "./ui/pages/loginPage";
 import AuthProvider from "./auth/authProvider";
-import {ToastContainer} from "react-toastify/unstyled";
+import {ToastContainer} from "react-toastify";
 import Layout from "./ui/pages/layout.tsx";
+import SignupPage from "./ui/pages/signupPage.tsx";
 
 const router = createBrowserRouter([
     {
         path: "/", Component: Layout,
         children: [
             {index: true, Component: HomePage},
-            {path: "login", Component: LoginPage}
+            {path: "login", Component: LoginPage},
+            {path: "signup", Component: SignupPage}
         ]
     },
 ])

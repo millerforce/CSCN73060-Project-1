@@ -1,0 +1,55 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: #1e1e1e;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    min-width: 30rem;
+}
+
+.title {
+    font-size: xx-large;
+    font-weight: bolder;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 0.25rem;
+    font-size: large;
+}
+
+.error {
+    color: red;
+}
+
+.input {
+    padding: 0.5rem;
+    border-style: none;
+    border-radius: 0.25rem;
+    font-size: large;
+}
+
+.signup {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.button {
+    background-color: #54c750;
+    color: #060c06;
+    font-size: large;
+    font-weight: bold;
+}
