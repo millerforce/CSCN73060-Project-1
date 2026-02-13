@@ -2,14 +2,17 @@ package com.group1.froggy.app.services;
 
 import com.group1.froggy.api.post.Post;
 import com.group1.froggy.api.Content;
+import com.group1.froggy.api.post.PostStats;
 import com.group1.froggy.app.exceptions.IllegalActionException;
 import com.group1.froggy.app.exceptions.InvalidCredentialsException;
 import com.group1.froggy.jpa.account.session.SessionJpa;
 import com.group1.froggy.jpa.post.PostJpa;
 import com.group1.froggy.jpa.post.PostRepository;
+import com.group1.froggy.jpa.post.comment.CommentRepository;
 import com.group1.froggy.jpa.post.like.PostLikeJpa;
 import com.group1.froggy.jpa.post.like.PostLikeRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +35,7 @@ public class PostService {
     private final AuthorizationService authorizationService;
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
 
     public List<Post> getPosts(String cookie, Integer lastNPosts, Integer offset) {
         if (!authorizationService.isValidSession(cookie)) {
@@ -82,6 +87,7 @@ public class PostService {
         }
 
         postJpa.setContent(content.content());
+        postJpa.setUpdatedAt(LocalDateTime.now());
 
         return toPostWithLikes(postRepository.save(postJpa));
     }
@@ -112,14 +118,45 @@ public class PostService {
         return toPostWithLikes(postJpa);
     }
 
+    public PostStats getPostStats(String cookie, UUID postId) {
+        if (!authorizationService.isValidSession(cookie)) {
+            throw new InvalidCredentialsException("Invalid session cookie");
+        }
+
+        PostJpa postJpa = postRepository.findById(postId)
+            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+        long postLikes = postLikeRepository.countByPost(postJpa);
+        long numberOfComments = commentRepository.countByPostId(postJpa.getId());
+
+        return new PostStats(slowFibonacci(postLikes + numberOfComments));
+    }
+
+    private long slowFibonacci(long n) {
+        if (n <= 1) return n;
+        if (slowIsPrime(n)) {
+            return n;
+        }
+        return slowFibonacci(n - 1) + slowFibonacci(n - 2);
+    }
+
+    private boolean slowIsPrime(long num) {
+        if (num <= 1) return false;
+        for (long i = 2; i <= Math.sqrt(num); i++) {
+            if (num % i == 0) return false;
+        }
+        return true;
+    }
+
     private Post toPostWithLikes(PostJpa postJpa) {
-        long likes = postLikeRepository.countByPost(postJpa);
+        long postLikes = postLikeRepository.countByPost(postJpa);
+        long numberOfComments = commentRepository.countByPostId(postJpa.getId());
         return new Post(
             postJpa.getId(),
             postJpa.getAccount().toAccount(),
             postJpa.getContent(),
-            likes,
-            0L,
+            postLikes,
+            numberOfComments,
             postJpa.getCreatedAt(),
             postJpa.getUpdatedAt()
         );

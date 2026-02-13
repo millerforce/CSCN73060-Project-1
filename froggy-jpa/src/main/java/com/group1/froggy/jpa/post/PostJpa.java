@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
-@Setter
 @Entity
 @Builder
 @ToString
@@ -25,7 +24,6 @@ public class PostJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Setter(AccessLevel.NONE)
     private UUID id;
 
     @ManyToOne
@@ -33,6 +31,7 @@ public class PostJpa {
     @NonNull
     private AccountJpa account;
 
+    @Setter
     @Column
     @NonNull
     private String content;
@@ -41,6 +40,7 @@ public class PostJpa {
     @NonNull
     private LocalDateTime createdAt;
 
+    @Setter
     @Column
     @NonNull
     private LocalDateTime updatedAt;

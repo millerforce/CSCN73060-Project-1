@@ -4,6 +4,7 @@ import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
 import com.group1.froggy.api.post.Post;
 import com.group1.froggy.api.Content;
+import com.group1.froggy.api.post.PostStats;
 import com.group1.froggy.app.auth.RequireSession;
 import com.group1.froggy.app.services.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -111,5 +112,18 @@ public class PostController {
         @PathVariable @NotNull(message = "Post ID is required") UUID postId
     ) {
         return postService.likePost(cookie, postId);
+    }
+
+    @GetMapping("/{postId}/stats")
+    @Operation(summary = "Get statistics for a Post. Currently only includes a trending score. Designed to be an expensive operation for load testing purposes.")
+    @ApiResponse(responseCode = "200", description = "Post statistics retrieved successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    PostStats getPostStats(
+        @RequestHeader(COOKIE_HEADER) String cookie,
+        @PathVariable @NotNull(message = "Post ID is required") UUID postId
+    ) {
+        return postService.getPostStats(cookie, postId);
     }
 }

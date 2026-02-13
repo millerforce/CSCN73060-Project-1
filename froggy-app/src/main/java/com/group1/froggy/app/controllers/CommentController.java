@@ -42,11 +42,13 @@ public class CommentController {
     @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @GetMapping("{postId}")
     List<Comment> getCommentsByPost(
+        @RequestHeader(COOKIE_HEADER) String cookie,
+
         @NotBlank(message = "Post ID cannot be blank")
         @NotNull(message = "Post ID cannot be null")
         @PathVariable UUID postId
     ) {
-        return commentService.getCommentsByPost(postId);
+        return commentService.getCommentsByPost(cookie, postId);
     }
 
     @Operation(summary = "Create a new comment for a post", description = "Creates a new comment associated with a specific post. Requires authentication.")

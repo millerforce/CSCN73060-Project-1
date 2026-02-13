@@ -34,5 +34,9 @@ public record Comment(
 
     @Schema(description = "The timestamp when the comment was last updated")
     @NonNull
-    LocalDateTime updatedAt
+    LocalDateTime updatedAt,
+
+    @Schema(description = "The number of likes the comment has received")
+    @NonNull
+    Long likeCount
 ) { }
