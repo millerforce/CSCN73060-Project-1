@@ -12,8 +12,8 @@ export default class AuthService {
         });
     }
 
-    public static async login(upload: AccountCredentials): Promise<ApiResponse<Account>> {
-        return await apiRequest<Account>({
+    public static async login(upload: AccountCredentials): Promise<ApiResponse<void>> {
+        return await apiRequest({
             method: "POST",
             url: this.BASE_URL + "/login",
             data: upload

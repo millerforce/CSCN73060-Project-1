@@ -8,5 +8,15 @@ export default defineConfig({
         alias: {
             "@styles": '/src/styles'
         }
+    },
+    server: {
+        proxy: {
+            "/api": {
+                target: "http://localhost:6204",
+                changeOrigin: true,
+                secure: false,
+                rewrite: (path) => path.replace(/^\/api/, "")
+            }
+        }
     }
 })

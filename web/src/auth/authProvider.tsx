@@ -1,23 +1,22 @@
 import * as React from "react";
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import type {Account, AccountCredentials} from "../http/types/account.ts";
 import AuthService from "../http/services/authService.ts";
 import {toast} from "react-toastify";
-import {useNavigate} from "react-router";
 
 type AuthContextData = {
     user: Account | null;
     login: (user: AccountCredentials) => Promise<boolean>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<boolean>;
+    loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
 const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const [user, setUser] = useState<Account | null>(null);
-
-    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     const login = async (upload: AccountCredentials): Promise<boolean> => {
 
@@ -27,9 +26,14 @@ const AuthProvider = ({children}: { children: React.ReactNode }) => {
             toast.error("Incorrect username or password.");
             return false;
         } else {
-            setUser(response.data);
 
-            toast.success(`Logged in successfully. Welcome back ${response.data.username}`);
+            const authed = await checkAuth();
+
+            if (!authed) {
+                toast.error("Failed to retrieve account after login");
+            }
+
+            toast.success(`Logged in successfully. Welcome back!`);
             return true;
         }
     }
@@ -43,8 +47,6 @@ const AuthProvider = ({children}: { children: React.ReactNode }) => {
         } else {
             toast.success("Logged out successfully");
             setUser(null);
-
-            navigate("/login");
         }
     }
 
@@ -53,17 +55,25 @@ const AuthProvider = ({children}: { children: React.ReactNode }) => {
 
         if (!response.success) {
             console.error("Auth Error:", response.error);
-        } else {
-            setUser((response.data));
+            setUser(null);
+            return false;
         }
 
-        return response.success;
+        setUser((response.data));
+        return true;
     }
 
     // Check if the user is authed which will redirect to login page or set user properly for use later
-    await checkAuth();
+    useEffect(() => {
+        const initAuth = async () => {
+            await checkAuth();
+            setLoading(false);
+        };
 
-    return (<AuthContext.Provider value={{user, login, logout, checkAuth}}>{children}</AuthContext.Provider>);
+        initAuth();
+    }, [])
+
+    return (<AuthContext.Provider value={{user, login, logout, checkAuth, loading}}>{children}</AuthContext.Provider>);
 };
 
 export default AuthProvider;
