@@ -1,23 +1,28 @@
-import '../../styles/post.css';
+import styles from "@styles/components/post.module.css"
 import type {Post} from "../../http/types/post.ts";
+import {useMemo} from "react";
 
-export function PostCard(post: Post) {
-    const {
-        id, author, content, numberOfLikes, numberOfComments, createdAt, updatedAt
-    } = post;
-    const date = createdAt === updatedAt ? new Date(createdAt).toLocaleDateString() : `${new Date(updatedAt).toLocaleDateString()} (edited)`;
+interface PostCardProps {
+    post: Post
+}
+
+export function PostCard({post}: PostCardProps) {
+    const date = useMemo(() =>
+            post.createdAt === post.updatedAt ? new Date(post.createdAt).toLocaleDateString() : `${new Date(post.updatedAt).toLocaleDateString()} (edited)`,
+        [post]
+    )
 
     return (
-        <div className="post-card">
-            <div className="container">
-                <p hidden>{id}</p>
-                <div className="author">{author.username}</div>
+        <div className={styles.postCard}>
+            <div className={styles.container}>
+                <p hidden>{post.id}</p>
+                <div className={styles.author}>{post.author.username}</div>
                 <div className="date">{date}</div>
             </div>
-            <p>{content}</p>
-            <div className="container">
-                <button><span className="material-symbols-outlined">thumb_up</span> {numberOfLikes}</button>
-                <div><span className="material-symbols-outlined">comment</span> {numberOfComments}</div>
+            <p>{post.content}</p>
+            <div className={styles.container}>
+                <button><span className="material-symbols-outlined">thumb_up</span> {post.numberOfLikes}</button>
+                <div><span className="material-symbols-outlined">comment</span> {post.numberOfComments}</div>
             </div>
         </div>
     );
