@@ -1,7 +1,6 @@
 package com.group1.froggy.jpa.account;
 
 import com.group1.froggy.api.account.Account;
-import com.group1.froggy.api.account.AccountUpload;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
