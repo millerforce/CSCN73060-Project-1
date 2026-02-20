@@ -2,7 +2,6 @@ package com.group1.froggy.app.services;
 
 import com.group1.froggy.api.account.Account;
 import com.group1.froggy.api.account.AccountCredentials;
-import com.group1.froggy.api.account.AccountUpload;
 import com.group1.froggy.api.account.Session;
 import com.group1.froggy.app.exceptions.InvalidCredentialsException;
 import com.group1.froggy.jpa.account.AccountJpa;
@@ -43,7 +42,7 @@ public class AuthorizationServiceTest {
 
     @Test
     void createAccount_Success(){
-        AccountUpload accountUpload = new AccountUpload("eighdyy", "123");
+        AccountCredentials accountUpload = new AccountCredentials("eighdyy", "123");
         AccountJpa accountJpa = AccountJpa.builder()
                 .id(UUID.randomUUID())
                 .username(accountUpload.username())
@@ -64,7 +63,7 @@ public class AuthorizationServiceTest {
 
     @Test
     void createAccount_UsernameExists(){
-        AccountUpload accountUpload = new AccountUpload("eighdyy", "123");
+        AccountCredentials accountUpload = new AccountCredentials("eighdyy", "123");
         when(accountRepository.existsByUsername(accountUpload.username()))
                 .thenReturn(true);
 
