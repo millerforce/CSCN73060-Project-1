@@ -13,6 +13,13 @@
     box-sizing: border-box;
 }
 
+.clickable {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
 .author {
     font-weight: 600;
     font-size: 1rem;

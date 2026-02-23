@@ -4,6 +4,7 @@ import {useMemo} from "react";
 import PostService from "../../http/services/postService.ts";
 import {toast} from "react-toastify";
 import 'material-symbols';
+import {useNavigate} from "react-router";
 
 interface PostCardProps {
     post: Post
@@ -18,6 +19,8 @@ export function PostCard({post, refreshPost, isOwner, onDelete}: PostCardProps) 
         [post]
     )
 
+    const navigate = useNavigate();
+
     const handleLike = async () => {
         const response = await PostService.likePost(post.id);
 
@@ -31,12 +34,15 @@ export function PostCard({post, refreshPost, isOwner, onDelete}: PostCardProps) 
 
     return (
         <div className={styles.postCard}>
-            <div className={styles.container}>
-                <p hidden>{post.id}</p>
-                <div className={styles.author}>{post.author.username}</div>
-                <div className="date">{date}</div>
+            <div onClick={() => navigate(`/posts/${post.id}`)} className={styles.clickable}>
+                <div className={styles.container}>
+                    <p hidden>{post.id}</p>
+                    <div className={styles.author}>{post.author.username}</div>
+                    <div className="date">{date}</div>
+                </div>
+                <p>{post.content}</p>
             </div>
-            <p>{post.content}</p>
+
             <div className={styles.buttonContainer}>
                 <div className={styles.buttonGroup}>
                     <button disabled={post.likedByCurrentUser} onClick={handleLike}><span

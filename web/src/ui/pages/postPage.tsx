@@ -59,10 +59,12 @@ export default function PostPage() {
 
     return <div className={styles.wrapper}>
 
-        <div className={styles.content}>
+        <div style={{display: isFocused ? "none" : "block"}} className={styles.content}>
             <AddPost onAdd={handlePostAdd}/>
             <PostCollection posts={posts} user={authContext.user} onDelete={handlePostDelete}
                             refreshPost={handlePostReplacement}/>
         </div>
+
+
     </div>
 }
