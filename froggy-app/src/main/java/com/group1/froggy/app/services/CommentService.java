@@ -3,7 +3,7 @@ package com.group1.froggy.app.services;
 import com.group1.froggy.api.Content;
 import com.group1.froggy.api.comment.Comment;
 import com.group1.froggy.app.exceptions.IllegalActionException;
-import com.group1.froggy.app.exceptions.InvalidCredentialsException;
+import com.group1.froggy.jpa.account.AccountJpa;
 import com.group1.froggy.jpa.account.session.SessionJpa;
 import com.group1.froggy.jpa.post.PostRepository;
 import com.group1.froggy.jpa.post.comment.CommentJpa;
@@ -33,12 +33,10 @@ public class CommentService {
     private final CommentLikeRepository commentLikeRepository;
 
     public List<Comment> getCommentsByPost(String cookie, UUID postId) {
-        if (!authorizationService.isValidSession(cookie)) {
-            throw new InvalidCredentialsException("Invalid session cookie");
-        }
+        SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
         return commentRepository.findCommentJpaByPostId(postId).stream()
-            .map(this::toCommentWithLikes)
+            .map(commentJpa -> toCommentWithLikes(sessionJpa.getAccount(), commentJpa))
             .toList();
     }
 
@@ -57,13 +55,11 @@ public class CommentService {
 
         commentJpa = commentRepository.save(commentJpa);
 
-        return toCommentWithLikes(commentJpa);
+        return toCommentWithLikes(sessionJpa.getAccount(), commentJpa);
     }
 
     public Comment editComment(String cookie, UUID commentId, Content content) {
-        if (!authorizationService.isValidSession(cookie)) {
-            throw new InvalidCredentialsException("Invalid session cookie");
-        }
+        SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
         CommentJpa commentJpa = commentRepository.findById(commentId)
             .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
@@ -71,7 +67,7 @@ public class CommentService {
         commentJpa.setContent(content.content());
         commentJpa.setUpdatedAt(LocalDateTime.now());
 
-        return toCommentWithLikes(commentRepository.save(commentJpa));
+        return toCommentWithLikes(sessionJpa.getAccount(), commentRepository.save(commentJpa));
     }
 
     public void deleteComment(String cookie, UUID commentId) {
@@ -95,11 +91,12 @@ public class CommentService {
 
         commentLikeRepository.save(CommentLikeJpa.create(commentJpa, sessionJpa.getAccount()));
 
-        return toCommentWithLikes(commentJpa);
+        return toCommentWithLikes(sessionJpa.getAccount(), commentJpa);
     }
 
-    private Comment toCommentWithLikes(CommentJpa commentJpa) {
+    private Comment toCommentWithLikes(AccountJpa accountJpa, CommentJpa commentJpa) {
         long likes = commentLikeRepository.countByComment(commentJpa);
+        boolean likedByCurrentUser = commentLikeRepository.existsById(CommentLikeJpa.create(commentJpa, accountJpa).getId());
         return new Comment(
             commentJpa.getId(),
             commentJpa.getPost().getId(),
@@ -107,7 +104,8 @@ public class CommentService {
             commentJpa.getContent(),
             commentJpa.getCreatedAt(),
             commentJpa.getUpdatedAt(),
-            likes
+            likes,
+            likedByCurrentUser
         );
     }
 }
