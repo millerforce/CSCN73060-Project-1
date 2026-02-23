@@ -10,6 +10,7 @@ import com.group1.froggy.jpa.account.session.SessionJpa;
 import com.group1.froggy.jpa.account.session.SessionRepository;
 
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -72,18 +73,20 @@ public class AuthorizationServiceTest {
 
     @Test
     void loginAccount_Success(){
-        String username = "willy";
-        String rawPassword = "123";
 
-        AccountJpa accountJpa = mock(AccountJpa.class);
-        when(accountRepository.findByUsername(username)).thenReturn(Optional.of(accountJpa));
-        when(accountJpa.getHashedPassword())
-                .thenReturn(new BCryptPasswordEncoder().encode(rawPassword));
-        when(sessionRepository.save(any(SessionJpa.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+        AccountCredentials accountUpload = new AccountCredentials("willy", "123");
+        AccountJpa accountJpa = AccountJpa.builder()
+                .id(UUID.randomUUID())
+                .username(accountUpload.username())
+                .hashedPassword(new BCryptPasswordEncoder().encode(accountUpload.password()))
+                .createdAt(LocalDateTime.now())
+                .build();
 
-        AccountCredentials accountCredentials = new AccountCredentials(username, rawPassword);
-        ResponseEntity<Void> response = authorizationService.loginAccount(accountCredentials);
+        when(accountRepository.findByUsername(accountUpload.username())).thenReturn(Optional.of(accountJpa));
+        when(sessionRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+
+        ResponseEntity<Void> response = authorizationService.loginAccount(accountUpload);
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
@@ -93,37 +96,42 @@ public class AuthorizationServiceTest {
     }
 
     @Test
-    void loginAccount_InvalidCredentials(){
-        String username = "Connor";
-        String rawPassword = "BADConnor";
+    void loginAccount_InvalidPassword(){
+        AccountCredentials accountBadPassword = new AccountCredentials("Connor", "bad");
+        AccountCredentials accountUpload = new AccountCredentials("Connor", "good");
 
-        AccountJpa accountjpa = mock(AccountJpa.class);
+        AccountJpa accountJpa = AccountJpa.builder()
+                .id(UUID.randomUUID())
+                .username(accountUpload.username())
+                .hashedPassword(new BCryptPasswordEncoder().encode(accountUpload.password()))
+                .createdAt(LocalDateTime.now())
+                .build();
 
-        when(accountRepository.findByUsername(username)).thenReturn(Optional.of(accountjpa));
-        when(accountjpa.getHashedPassword())
-                .thenReturn(new BCryptPasswordEncoder().encode(rawPassword));
-        when(sessionRepository.save(any(SessionJpa.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(accountRepository.findByUsername(accountUpload.username())).thenReturn(Optional.of(accountJpa));
 
-        AccountCredentials accountCredentials = new AccountCredentials(username, rawPassword);
-
-        assertThrows(InvalidCredentialsException.class, () -> authorizationService.loginAccount(accountCredentials));
+        assertThrows(InvalidCredentialsException.class, () -> authorizationService.loginAccount(accountBadPassword));
     }
+
 
     @Test
     void logoutAccount_Success(){
+        AccountCredentials accountUpload = new AccountCredentials("willy", "123");
+        AccountJpa accountJpa = AccountJpa.builder()
+                .id(UUID.randomUUID())
+                .username(accountUpload.username())
+                .hashedPassword(new BCryptPasswordEncoder().encode(accountUpload.password()))
+                .createdAt(LocalDateTime.now())
+                .build();
 
-        String username = "port 8080";
-        String rawPassword = "123";
+        when(accountRepository.findByUsername(accountUpload.username())).thenReturn(Optional.of(accountJpa));
+        when(sessionRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+        when(sessionRepository.sessionExists(any(), any())).thenReturn(true);
 
-        UUID accountId = UUID.randomUUID();
-        String token = "validToken";
+        ResponseEntity<Void> response = authorizationService.loginAccount(accountUpload);
+        assertNotNull(response);
 
-        when(sessionRepository.sessionExists(accountId, token)).thenReturn(true);
+        response = authorizationService.logoutAccount(response.getHeaders().getFirst("Set-Cookie"));
 
-        AccountCredentials accountCredentials = new AccountCredentials(username, rawPassword);
-        ResponseEntity<Void> response = authorizationService.loginAccount(accountCredentials);
-
-        assertNull(response);
+        assertEquals("session=; Path=/; Max-Age=0; HttpOnly", response.getHeaders().getFirst("Set-Cookie"));
     }
 }
