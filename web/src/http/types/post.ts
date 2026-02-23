@@ -12,6 +12,7 @@ export type Post = {
     numberOfComments: number;
     createdAt: Date;
     updatedAt: Date;
+    likedByCurrentUser: boolean;
 }
 
 export type Comment = {

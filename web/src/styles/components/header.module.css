@@ -1,0 +1,21 @@
+.wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+    background-color: #1e1e1e;
+    box-sizing: border-box;
+}
+
+.username {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #54c750;
+}
+
+.logout {
+    font-weight: bold;
+    color: #ff171a;
+    font-size: 1rem;
+}

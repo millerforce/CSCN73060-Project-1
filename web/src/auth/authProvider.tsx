@@ -4,7 +4,7 @@ import type {Account, AccountCredentials} from "../http/types/account.ts";
 import AuthService from "../http/services/authService.ts";
 import {toast} from "react-toastify";
 
-type AuthContextData = {
+export type AuthContextData = {
     user: Account | null;
     login: (user: AccountCredentials) => Promise<boolean>;
     logout: () => Promise<void>;

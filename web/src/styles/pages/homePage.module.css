@@ -3,8 +3,7 @@
     flex-direction: column;
     gap: 1.5rem;
     height: 100%;
-    padding: 1.5rem;
-    box-sizing: border-box;
+    width: 100%;
     place-items: center;
 }
 
@@ -12,8 +11,9 @@
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    max-width: 60rem;
-    gap: 1.5rem;
-    height: 100%;
-    overflow-y: auto;
+    gap: 1rem;
+    border: 1px solid red;
+    padding: 1rem;
+    max-width: 75%;
+    min-width: 35rem;
 }

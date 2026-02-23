@@ -3,6 +3,10 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: auto;
     box-sizing: border-box;
+}
+
+.content {
+    display: flex;
+    overflow-y: auto;
 }

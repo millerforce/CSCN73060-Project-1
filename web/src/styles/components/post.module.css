@@ -10,6 +10,7 @@
     word-wrap: break-word;
     font-family: "Segoe UI", sans-serif;
     background-color: #2a2a2a;
+    box-sizing: border-box;
 }
 
 .author {
@@ -22,6 +23,13 @@
 }
 
 .buttonContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: space-between;
+}
+
+.buttonGroup {
     display: flex;
     align-items: center;
     gap: 0.5rem;
