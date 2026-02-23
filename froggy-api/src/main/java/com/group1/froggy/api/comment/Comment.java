@@ -38,7 +38,7 @@ public record Comment(
 
     @Schema(description = "The number of likes the comment has received")
     @NonNull
-    Long likeCount,
+    Long numberOfLikes,
 
     @Schema(description = "Whether the comment is liked by the current user")
     @NonNull
