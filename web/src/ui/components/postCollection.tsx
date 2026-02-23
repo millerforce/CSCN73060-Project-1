@@ -8,6 +8,7 @@ interface PostCollectionProps {
 
 export default function PostCollection({posts}: PostCollectionProps) {
     return <div className={styles.wrapper}>
-        {posts.map((post) => <PostCard post={post}/>)}
+        <div>The Pond</div>
+        {posts.map((post) => <PostCard key={post.id} post={post}/>)}
     </div>
 }

@@ -1,5 +1,11 @@
 .wrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
+    min-width: 50vh;
+    max-height: 50rem;
+    overflow-y: auto;
+    padding: 1rem;
+    background-color: #1e1e1e;
+    border-radius: 1rem;
 }

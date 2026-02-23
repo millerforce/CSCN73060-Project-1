@@ -12,6 +12,10 @@ export function PostCard({post}: PostCardProps) {
         [post]
     )
 
+    // const handleLike = () => {
+    //
+    // }
+
     return (
         <div className={styles.postCard}>
             <div className={styles.container}>
@@ -20,9 +24,9 @@ export function PostCard({post}: PostCardProps) {
                 <div className="date">{date}</div>
             </div>
             <p>{post.content}</p>
-            <div className={styles.container}>
+            <div className={styles.buttonContainer}>
                 <button><span className="material-symbols-outlined">thumb_up</span> {post.numberOfLikes}</button>
-                <div><span className="material-symbols-outlined">comment</span> {post.numberOfComments}</div>
+                <button><span className="material-symbols-outlined">comment</span> {post.numberOfComments}</button>
             </div>
         </div>
     );

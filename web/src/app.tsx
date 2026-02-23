@@ -1,4 +1,3 @@
-import "@styles/app.css"
 import {createBrowserRouter} from "react-router";
 import HomePage from "./ui/pages/homePage";
 import {RouterProvider} from "react-router/dom";
@@ -7,10 +6,16 @@ import AuthProvider from "./auth/authProvider";
 import {ToastContainer} from "react-toastify";
 import Layout from "./ui/pages/layout.tsx";
 import SignupPage from "./ui/pages/signupPage.tsx";
+import {AuthSetup} from "./auth/authSetup.tsx";
 
 const router = createBrowserRouter([
     {
-        path: "/", Component: Layout,
+        path: "/", element: (
+            <>
+                <AuthSetup/>
+                <Layout/>
+            </>
+        ),
         children: [
             {index: true, Component: HomePage},
             {path: "login", Component: LoginPage},
@@ -21,10 +26,12 @@ const router = createBrowserRouter([
 
 const App = () => {
     return (
-        <AuthProvider>
-            <RouterProvider router={router}/>
-            <ToastContainer position="top-left" autoClose={5000} pauseOnHover={true}/>
-        </AuthProvider>
+        <>
+            <AuthProvider>
+                <RouterProvider router={router}/>
+                <ToastContainer position="top-left" autoClose={5000} pauseOnHover={true}/>
+            </AuthProvider>
+        </>
     )
 }
 
