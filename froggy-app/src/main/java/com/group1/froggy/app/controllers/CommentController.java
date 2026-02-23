@@ -44,7 +44,6 @@ public class CommentController {
     List<Comment> getCommentsByPost(
         @RequestHeader(COOKIE_HEADER) String cookie,
 
-        @NotBlank(message = "Post ID cannot be blank")
         @NotNull(message = "Post ID cannot be null")
         @PathVariable UUID postId
     ) {
@@ -63,7 +62,6 @@ public class CommentController {
 
         @PathVariable
         @NotNull(message = "Post ID cannot be null")
-        @NotBlank(message = "Post ID cannot be blank")
         UUID postId,
 
         @RequestBody
