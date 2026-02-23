@@ -1,4 +1,4 @@
-import styles from "@styles/pages/homePage.module.css"
+import styles from "@styles/pages/postPage.module.css"
 import {useEffect, useState} from "react";
 import type {Post} from "../../http/types/post.ts";
 import PostService from "../../http/services/postService.ts";
@@ -6,14 +6,19 @@ import {toast} from "react-toastify";
 import PostCollection from "../components/postCollection.tsx";
 import AddPost from "../components/addPost.tsx";
 import {useAuth} from "../../auth/authProvider.tsx";
+import {useParams} from "react-router";
 
-export default function HomePage() {
-
+export default function PostPage() {
     const authContext = useAuth();
 
     if (!authContext) {
         return <h1>AuthContext invalid</h1>
     }
+
+    const {postId} = useParams();
+
+    // If the user browsed to a specific post
+    const isFocused = Boolean(postId);
 
     const [posts, setPosts] = useState<Post[]>([]);
 

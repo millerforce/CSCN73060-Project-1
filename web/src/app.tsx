@@ -1,5 +1,5 @@
 import {createBrowserRouter} from "react-router";
-import HomePage from "./ui/pages/homePage";
+import PostPage from "./ui/pages/postPage.tsx";
 import {RouterProvider} from "react-router/dom";
 import LoginPage from "./ui/pages/loginPage";
 import AuthProvider from "./auth/authProvider";
@@ -17,7 +17,7 @@ const router = createBrowserRouter([
             </>
         ),
         children: [
-            {index: true, Component: HomePage},
+            {path: "posts/:postId?", Component: PostPage},
             {path: "login", Component: LoginPage},
             {path: "signup", Component: SignupPage}
         ]
