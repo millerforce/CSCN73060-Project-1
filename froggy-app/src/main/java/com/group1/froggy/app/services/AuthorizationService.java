@@ -2,7 +2,6 @@ package com.group1.froggy.app.services;
 
 import com.group1.froggy.api.account.Account;
 import com.group1.froggy.api.account.AccountCredentials;
-import com.group1.froggy.api.account.AccountUpload;
 import com.group1.froggy.api.account.Session;
 import com.group1.froggy.app.CookieBuilder;
 import com.group1.froggy.app.exceptions.InvalidCredentialsException;
@@ -34,14 +33,14 @@ public class AuthorizationService {
 
     public static final String SESSION_COOKIE = "session";
 
-    public Account createAccount(AccountUpload accountUpload) {
-        if (accountRepository.existsByUsername(accountUpload.username())) {
+    public Account createAccount(AccountCredentials accountCredentials) {
+        if (accountRepository.existsByUsername(accountCredentials.username())) {
             throw new EntityExistsException("Account with username already exists");
         }
 
-        String hashedPassword = passwordEncoder.encode(accountUpload.password());
+        String hashedPassword = passwordEncoder.encode(accountCredentials.password());
 
-        AccountJpa accountJpa = AccountJpa.create(accountUpload.username(), hashedPassword);
+        AccountJpa accountJpa = AccountJpa.create(accountCredentials.username(), hashedPassword);
 
         return accountRepository.save(accountJpa).toAccount();
     }

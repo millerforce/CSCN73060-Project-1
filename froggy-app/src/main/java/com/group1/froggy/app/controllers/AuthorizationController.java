@@ -2,7 +2,6 @@ package com.group1.froggy.app.controllers;
 
 import com.group1.froggy.api.account.Account;
 import com.group1.froggy.api.account.AccountCredentials;
-import com.group1.froggy.api.account.AccountUpload;
 import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
 import com.group1.froggy.app.auth.RequireSession;
@@ -40,7 +39,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "201", description = "Account created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "409", description = "Username already exists", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    Account createAccount(@RequestBody @NotNull @Valid AccountUpload accountUpload) {
+    Account createAccount(@RequestBody @NotNull @Valid AccountCredentials accountUpload) {
         return authorizationService.createAccount(accountUpload);
     }
 

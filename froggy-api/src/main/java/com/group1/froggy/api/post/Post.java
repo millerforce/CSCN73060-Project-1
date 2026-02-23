@@ -38,5 +38,9 @@ public record Post(
 
     @Schema(description = "The timestamp when the post was last updated")
     @NonNull
-    LocalDateTime updatedAt
+    LocalDateTime updatedAt,
+
+    @Schema(description = "Statistics related to the post")
+    @NonNull
+    Boolean likedByCurrentUser
 ) { }

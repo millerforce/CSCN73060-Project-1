@@ -5,6 +5,7 @@ import com.group1.froggy.api.Content;
 import com.group1.froggy.api.post.PostStats;
 import com.group1.froggy.app.exceptions.IllegalActionException;
 import com.group1.froggy.app.exceptions.InvalidCredentialsException;
+import com.group1.froggy.jpa.account.AccountJpa;
 import com.group1.froggy.jpa.account.session.SessionJpa;
 import com.group1.froggy.jpa.post.PostJpa;
 import com.group1.froggy.jpa.post.PostRepository;
@@ -12,7 +13,6 @@ import com.group1.froggy.jpa.post.comment.CommentRepository;
 import com.group1.froggy.jpa.post.like.PostLikeJpa;
 import com.group1.froggy.jpa.post.like.PostLikeRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -38,9 +38,7 @@ public class PostService {
     private final CommentRepository commentRepository;
 
     public List<Post> getPosts(String cookie, Integer lastNPosts, Integer offset) {
-        if (!authorizationService.isValidSession(cookie)) {
-            throw new InvalidCredentialsException("Invalid session cookie");
-        }
+        SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
         int size = (lastNPosts == null || lastNPosts <= 0) ? 10 : lastNPosts;
         int skip = (offset == null || offset < 0) ? 0 : offset;
@@ -62,7 +60,7 @@ public class PostService {
         return combined.stream()
             .skip(indexInPage)
             .limit(size)
-            .map(this::toPostWithLikes)
+            .map(postJpa -> toPostWithLikes(sessionJpa.getAccount(), postJpa))
             .toList();
     }
 
@@ -73,7 +71,7 @@ public class PostService {
 
         postJpa = postRepository.save(postJpa);
 
-        return toPostWithLikes(postJpa);
+        return toPostWithLikes(sessionJpa.getAccount(), postJpa);
     }
 
     public Post editPost(String cookie, UUID postId, Content content) {
@@ -89,7 +87,7 @@ public class PostService {
         postJpa.setContent(content.content());
         postJpa.setUpdatedAt(LocalDateTime.now());
 
-        return toPostWithLikes(postRepository.save(postJpa));
+        return toPostWithLikes(sessionJpa.getAccount(), postRepository.save(postJpa));
     }
 
     public void deletePost(String cookie, UUID postId) {
@@ -115,7 +113,7 @@ public class PostService {
 
         postLikeRepository.save(PostLikeJpa.create(postJpa, sessionJpa.getAccount()));
 
-        return toPostWithLikes(postJpa);
+        return toPostWithLikes(sessionJpa.getAccount(), postJpa);
     }
 
     public PostStats getPostStats(String cookie, UUID postId) {
@@ -148,9 +146,10 @@ public class PostService {
         return true;
     }
 
-    private Post toPostWithLikes(PostJpa postJpa) {
+    private Post toPostWithLikes(AccountJpa accountJpa, PostJpa postJpa) {
         long postLikes = postLikeRepository.countByPost(postJpa);
         long numberOfComments = commentRepository.countByPostId(postJpa.getId());
+        boolean likedByCurrentUser = postLikeRepository.existsById(PostLikeJpa.create(postJpa, accountJpa).getId());
         return new Post(
             postJpa.getId(),
             postJpa.getAccount().toAccount(),
@@ -158,7 +157,8 @@ public class PostService {
             postLikes,
             numberOfComments,
             postJpa.getCreatedAt(),
-            postJpa.getUpdatedAt()
+            postJpa.getUpdatedAt(),
+            likedByCurrentUser
         );
     }
 
