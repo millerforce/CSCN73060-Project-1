@@ -4,20 +4,19 @@ import com.group1.froggy.api.Content;
 import com.group1.froggy.api.comment.Comment;
 import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
-import com.group1.froggy.app.auth.RequireSession;
 import com.group1.froggy.app.services.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +29,6 @@ import static com.group1.froggy.app.controllers.AuthorizationController.COOKIE_H
 @RequestMapping("/comment")
 @Tag(name = "Comment Controller", description = "Handles all operations regarding Comments")
 @RequiredArgsConstructor
-@RequireSession
 public class CommentController {
 
     private final CommentService commentService;
@@ -42,11 +40,14 @@ public class CommentController {
     @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @GetMapping("{postId}")
     List<Comment> getCommentsByPost(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
 
         @NotNull(message = "Post ID cannot be null")
         @PathVariable UUID postId
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return commentService.getCommentsByPost(cookie, postId);
     }
 
@@ -58,7 +59,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("{postId}")
     Comment createComment(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
 
         @PathVariable
         @NotNull(message = "Post ID cannot be null")
@@ -69,6 +70,9 @@ public class CommentController {
         @Valid
         Content content
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return commentService.createComment(cookie, postId, content);
     }
 
@@ -80,7 +84,7 @@ public class CommentController {
     @ApiResponse(responseCode = "404", description = "Comment not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @PatchMapping("{commentId}")
     Comment editComment(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
 
         @PathVariable
         @NotNull(message = "Comment ID cannot be null")
@@ -91,6 +95,9 @@ public class CommentController {
         @Valid
         Content content
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return commentService.editComment(cookie, commentId, content);
     }
 
@@ -103,12 +110,15 @@ public class CommentController {
     @DeleteMapping("{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteComment(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
 
         @PathVariable
         @NotNull(message = "Comment ID cannot be null")
         UUID commentId
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         commentService.deleteComment(cookie, commentId);
     }
 
@@ -119,12 +129,15 @@ public class CommentController {
     @ApiResponse(responseCode = "404", description = "Comment not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @PutMapping("{commentId}")
     Comment likeComment(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
 
         @PathVariable
         @NotNull(message = "Comment ID cannot be null")
         UUID commentId
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return commentService.likeComment(cookie, commentId);
     }
 

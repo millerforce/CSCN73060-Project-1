@@ -4,7 +4,6 @@ import com.group1.froggy.api.account.Account;
 import com.group1.froggy.api.account.AccountCredentials;
 import com.group1.froggy.api.docs.returns.MinimalProblemDetail;
 import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
-import com.group1.froggy.app.auth.RequireSession;
 import com.group1.froggy.app.services.AuthorizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -20,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Validated
@@ -60,8 +60,11 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "200", description = "Current account retrieved successfully")
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Account getCurrentAccount(
-        @RequestHeader(COOKIE_HEADER) String cookie
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return authorizationService.getCurrentAccount(cookie);
     }
 
@@ -72,10 +75,12 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "400", description = "Invalid fields provided")
     @ApiResponse(responseCode = "401", description = "Invalid credentials")
     @ApiResponse(responseCode = "404", description = "Account not found")
-    @RequireSession
     ResponseEntity<Void> logoutAccount(
-        @RequestHeader(COOKIE_HEADER) String cookie
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return authorizationService.logoutAccount(cookie);
     }
 

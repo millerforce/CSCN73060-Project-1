@@ -5,7 +5,6 @@ import com.group1.froggy.api.docs.returns.MinimalValidationDetail;
 import com.group1.froggy.api.post.Post;
 import com.group1.froggy.api.Content;
 import com.group1.froggy.api.post.PostStats;
-import com.group1.froggy.app.auth.RequireSession;
 import com.group1.froggy.app.services.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +33,6 @@ import static com.group1.froggy.app.controllers.AuthorizationController.COOKIE_H
 @RequestMapping("/post")
 @Tag(name = "Post Controller", description = "Handles all operations regarding Posts")
 @RequiredArgsConstructor
-@RequireSession
 public class PostController {
 
     private final PostService postService;
@@ -44,7 +43,7 @@ public class PostController {
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     List<Post> getPosts(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
 
         @RequestParam(required = false, defaultValue = "10")
         @Positive(message = "Max results must be positive")
@@ -55,6 +54,9 @@ public class PostController {
         @PositiveOrZero(message = "Offset must be positive")
         Integer offset
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return postService.getPosts(cookie, maxResults, offset);
     }
 
@@ -65,9 +67,12 @@ public class PostController {
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Post createPost(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
         @RequestBody @NotNull(message = "Post data is required") @Valid Content content
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return postService.createPost(cookie, content);
     }
 
@@ -79,10 +84,13 @@ public class PostController {
     @ApiResponse(responseCode = "403", description = "Only the author can edit the post", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Post editPost(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId,
         @RequestBody @NotNull(message = "Post data is required") @Valid Content content
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return postService.editPost(cookie, postId, content);
     }
 
@@ -95,9 +103,12 @@ public class PostController {
     @ApiResponse(responseCode = "403", description = "Only the author can delete the post", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     void deletePost(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         postService.deletePost(cookie, postId);
     }
 
@@ -108,9 +119,12 @@ public class PostController {
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Post likePost(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return postService.likePost(cookie, postId);
     }
 
@@ -121,9 +135,12 @@ public class PostController {
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Post not found", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     PostStats getPostStats(
-        @RequestHeader(COOKIE_HEADER) String cookie,
+        @RequestHeader(value = COOKIE_HEADER, required = false) String cookie,
         @PathVariable @NotNull(message = "Post ID is required") UUID postId
     ) {
+        if (cookie == null || cookie.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing session cookie");
+        }
         return postService.getPostStats(cookie, postId);
     }
 }
