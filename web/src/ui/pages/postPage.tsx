@@ -1,5 +1,5 @@
 import styles from "@styles/pages/postPage.module.css"
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import type {Post} from "../../http/types/post.ts";
 import PostService from "../../http/services/postService.ts";
 import {toast} from "react-toastify";
@@ -7,6 +7,7 @@ import PostCollection from "../components/postCollection.tsx";
 import AddPost from "../components/addPost.tsx";
 import {useAuth} from "../../auth/authProvider.tsx";
 import {useParams} from "react-router";
+import FocusedPost from "../components/focusedPost.tsx";
 
 export default function PostPage() {
     const authContext = useAuth();
@@ -15,12 +16,18 @@ export default function PostPage() {
         return <h1>AuthContext invalid</h1>
     }
 
+    const [posts, setPosts] = useState<Post[]>([]);
+
     const {postId} = useParams();
 
     // If the user browsed to a specific post
-    const isFocused = Boolean(postId);
 
-    const [posts, setPosts] = useState<Post[]>([]);
+    const focusedPost = useMemo(() => {
+        if (!postId) return undefined;
+        return posts.find((post) => post.id === postId)
+    }, [postId, posts])
+
+    const isFocused = Boolean(postId);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -36,7 +43,7 @@ export default function PostPage() {
         fetchPosts();
     }, []);
 
-    const handlePostDelete = async (postId: number) => {
+    const handlePostDelete = async (postId: string) => {
         const response = await PostService.deletePost(postId);
 
         if (!response.success) {
@@ -59,12 +66,12 @@ export default function PostPage() {
 
     return <div className={styles.wrapper}>
 
-        <div style={{display: isFocused ? "none" : "block"}} className={styles.content}>
+        <div style={{display: isFocused ? "none" : "flex"}} className={styles.content}>
             <AddPost onAdd={handlePostAdd}/>
             <PostCollection posts={posts} user={authContext.user} onDelete={handlePostDelete}
                             refreshPost={handlePostReplacement}/>
         </div>
 
-
+        {focusedPost && <FocusedPost user={authContext.user} post={focusedPost}/>}
     </div>
 }

@@ -10,7 +10,7 @@ interface PostCardProps {
     post: Post
     refreshPost: (newPost: Post) => void;
     isOwner: boolean;
-    onDelete: (postId: number) => void;
+    onDelete: (postId: string) => void;
 }
 
 export function PostCard({post, refreshPost, isOwner, onDelete}: PostCardProps) {

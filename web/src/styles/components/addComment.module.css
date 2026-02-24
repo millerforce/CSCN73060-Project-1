@@ -1,0 +1,31 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+   
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form label {
+    color: #54c750;
+    font-size: 1.25rem;
+}
+
+.form textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 3rem;
+    max-height: 10rem;
+    resize: vertical;
+    outline: none;
+    border-radius: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    background-color: #3e3f3e;
+    border: 0.0625rem solid #333;
+    line-height: 1.5;
+    color: #f0f2f0;
+}

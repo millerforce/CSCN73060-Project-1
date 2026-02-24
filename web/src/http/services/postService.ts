@@ -13,17 +13,17 @@ export default class PostService {
         });
     }
 
-    public static async deletePost(postId: number): Promise<ApiResponse<void>> {
+    public static async deletePost(postId: string): Promise<ApiResponse<void>> {
         return await apiRequest({
             method: "DELETE",
-            url: this.BASE_URL + "/" + postId.toString()
+            url: this.BASE_URL + "/" + postId
         });
     }
 
-    public static async editPost(postId: number, upload: PostUpload): Promise<ApiResponse<Post>> {
+    public static async editPost(postId: string, upload: PostUpload): Promise<ApiResponse<Post>> {
         return await apiRequest<Post>({
             method: "PATCH",
-            url: this.BASE_URL + "/" + postId.toString(),
+            url: this.BASE_URL + "/" + postId,
             data: upload
         });
     }
@@ -36,10 +36,10 @@ export default class PostService {
         })
     }
 
-    public static async likePost(postId: number): Promise<ApiResponse<Post>> {
+    public static async likePost(postId: string): Promise<ApiResponse<Post>> {
         return await apiRequest<Post>({
             method: "PUT",
-            url: this.BASE_URL + "/" + postId.toString()
+            url: this.BASE_URL + "/" + postId
         })
     }
 }

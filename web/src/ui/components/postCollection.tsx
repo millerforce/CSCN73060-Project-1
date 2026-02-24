@@ -6,7 +6,7 @@ import type {Account} from "../../http/types/account.ts";
 interface PostCollectionProps {
     posts: Post[];
     user: Account | null;
-    onDelete: (postId: number) => void; // Pass delete action to parent
+    onDelete: (postId: string) => void; // Pass delete action to parent
     refreshPost: (newPost: Post) => void;
 }
 

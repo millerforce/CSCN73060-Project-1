@@ -5,7 +5,7 @@ export type PostUpload = {
 }
 
 export type Post = {
-    id: number;
+    id: string;
     author: Account;
     content: string;
     numberOfLikes: number;
@@ -16,10 +16,16 @@ export type Post = {
 }
 
 export type Comment = {
-    id: number;
-    postId: number;
+    id: string;
+    postId: string;
     account: Account;
     content: string;
     createdAt: Date;
     updatedAt: Date;
+    numberOfLikes: number;
+    likedByCurrentUser: boolean;
+}
+
+export type CommentUpload = {
+    content: string;
 }

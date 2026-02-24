@@ -1,0 +1,18 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e1e1e1;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    color: #54c750;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+}

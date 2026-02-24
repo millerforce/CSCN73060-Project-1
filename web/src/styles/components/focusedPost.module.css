@@ -1,0 +1,30 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: #2a2a2a;
+    padding: 1.5rem;
+    min-width: 65%;
+    margin-top: 1rem;
+    gap: 1rem;
+    border: 1px solid #e1e1e1;
+    border-radius: 1rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    color: #54c750;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.content {
+    border: 1px solid #e1e1e1;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.commentSection {
+    display: flex;
+    flex-direction: column;
+}
