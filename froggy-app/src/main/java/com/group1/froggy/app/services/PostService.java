@@ -9,7 +9,9 @@ import com.group1.froggy.jpa.account.AccountJpa;
 import com.group1.froggy.jpa.account.session.SessionJpa;
 import com.group1.froggy.jpa.post.PostJpa;
 import com.group1.froggy.jpa.post.PostRepository;
+import com.group1.froggy.jpa.post.comment.CommentJpa;
 import com.group1.froggy.jpa.post.comment.CommentRepository;
+import com.group1.froggy.jpa.post.comment.like.CommentLikeRepository;
 import com.group1.froggy.jpa.post.like.PostLikeJpa;
 import com.group1.froggy.jpa.post.like.PostLikeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,6 +38,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     public List<Post> getPosts(String cookie, Integer lastNPosts, Integer offset) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
@@ -100,6 +103,11 @@ public class PostService {
             throw new IllegalActionException("Only the author can delete the post");
         }
 
+        List<CommentJpa> commentJpas = commentRepository.findCommentJpaByPostId(postId);
+        for (var comment : commentJpas) {
+            commentLikeRepository.deleteAllByComment(comment);
+        }
+        commentRepository.deleteAll(commentJpas);
         postLikeRepository.deleteAllByPost(postJpa);
         postRepository.delete(postJpa);
     }
