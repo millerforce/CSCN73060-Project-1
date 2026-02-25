@@ -127,7 +127,7 @@ public class PostService {
         long postLikes = postLikeRepository.countByPost(postJpa);
         long numberOfComments = commentRepository.countByPostId(postJpa.getId());
 
-        return new PostStats(slowFibonacci(postLikes + numberOfComments));
+        return new PostStats(slowFibonacci(postLikes + numberOfComments + 50));
     }
 
     private long slowFibonacci(long n) {
