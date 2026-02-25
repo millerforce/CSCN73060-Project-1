@@ -79,7 +79,7 @@ public class CommentService {
         if (!commentJpa.getAccount().getId().equals(sessionJpa.getAccount().getId())) {
             throw new IllegalActionException("Only the author can delete the comment");
         }
-
+        commentLikeRepository.deleteAllByComment(commentJpa);
         commentRepository.delete(commentJpa);
     }
 
