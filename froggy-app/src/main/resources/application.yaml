@@ -10,6 +10,8 @@ spring:
     username:
     password:
     driver-class-name: org.postgresql.Driver
+#    hikari:
+#      maximum-pool-size: 50
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -33,3 +35,7 @@ spring:
 springdoc:
   swagger-ui:
     path: /swagger
+#server:
+#  tomcat:
+#    threads:
+#      max: 500
