@@ -21,3 +21,9 @@
     box-sizing: border-box;
     overflow-y: auto;
 }
+
+.emptyMessage {
+    text-align: center;
+    font-style: italic;
+    padding: 1.5rem;
+}

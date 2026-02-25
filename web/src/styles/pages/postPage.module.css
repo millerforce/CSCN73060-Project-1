@@ -17,3 +17,7 @@
     max-width: 75%;
     min-width: 35rem;
 }
+
+.hidden {
+    display: none;
+}
