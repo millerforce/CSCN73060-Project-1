@@ -12,12 +12,16 @@ import FocusedPost from "../components/focusedPost.tsx";
 export default function PostPage() {
   const authContext = useAuth();
 
+  const FETCHSIZE = 10;
+
   const [posts, setPosts] = useState<Post[]>([]);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const { postId } = useParams();
 
   // If the user browsed to a specific post
-
   const focusedPost = useMemo(() => {
     if (!postId) return undefined;
     return posts.find((post) => post.id === postId);
@@ -25,39 +29,53 @@ export default function PostPage() {
 
   const isFocused = Boolean(postId);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const result = await PostService.getPosts({
-          maxResults: 10,
-          offset: 0,
-        });
+  const fetchPosts = async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const result = await PostService.getPosts({
+        maxResults: FETCHSIZE,
+        offset,
+      });
 
-        if (!result.success) {
-          toast.error("Failed to fetch posts");
-          return;
-        }
-
-        setPosts(result.data);
-      } catch (error) {
-        toast.error("Unexpected error fetching posts");
-        console.error(error);
+      if (!result.success) {
+        toast.error("Failed to fetch posts");
+        return;
       }
-    };
 
+      setPosts((prev) => {
+        const existingIds = new Set(prev.map((p) => p.id));
+        const newPosts = result.data.filter((p) => !existingIds.has(p.id));
+        return [...prev, ...newPosts];
+      });
+      setOffset((prev) => prev + FETCHSIZE);
+      if (result.data.length < FETCHSIZE) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      toast.error("Unexpected error fetching posts");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setPosts([]);
+    setOffset(0);
     fetchPosts().catch(console.error);
   }, []);
 
   const handlePostDelete = async (postId: string) => {
     const response = await PostService.deletePost(postId);
 
-    if (!response.success) {
-      toast.error("Failed to delete post");
-      console.error("Error:", response.error);
-    } else {
-      toast.success("Post deleted successfully");
+    if (response.success) {
+      toast.success("Leap deleted successfully");
 
       setPosts((prev) => prev.filter((post) => post.id !== postId));
+    } else {
+      toast.error("Failed to delete Leap");
+      console.error("Error:", response.error);
     }
   };
 
@@ -76,6 +94,8 @@ export default function PostPage() {
       <div className={`${styles.content} ${isFocused ? styles.hidden : ""}`}>
         <AddPost onAdd={handlePostAdd} />
         <PostCollection
+          hasMore={hasMore}
+          onLoadMore={fetchPosts}
           posts={posts}
           user={authContext.user}
           onDelete={handlePostDelete}
@@ -84,7 +104,12 @@ export default function PostPage() {
       </div>
 
       {focusedPost && (
-        <FocusedPost user={authContext.user} post={focusedPost} />
+        <FocusedPost
+          onDelete={handlePostDelete}
+          onRefresh={handlePostReplacement}
+          user={authContext.user}
+          post={focusedPost}
+        />
       )}
     </div>
   );

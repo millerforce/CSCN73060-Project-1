@@ -5,6 +5,7 @@ interface ButtonProps {
   disabled?: boolean;
   onClick?: () => void;
   iconString?: string;
+  text?: string;
 }
 
 export default function Button({
@@ -12,11 +13,13 @@ export default function Button({
   disabled = false,
   onClick,
   iconString,
+  text,
 }: Readonly<ButtonProps>) {
   return (
     <button className={styles.button} disabled={disabled} onClick={onClick}>
       <span className="material-symbols-outlined">{iconString}</span>
       {count}
+      {text}
     </button>
   );
 }

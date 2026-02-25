@@ -1,10 +1,13 @@
 .wrapper {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
     background-color: #1e1e1e;
     border-radius: 1rem;
+    min-height: 0;     /* allow shrinking */
+    overflow: hidden;  /* prevent scrolling here */
 }
 
 .header {
@@ -14,14 +17,16 @@
 }
 
 .posts {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
     box-sizing: border-box;
     overflow-y: auto;
 }
 
-.emptyMessage {
+.message {
+    color: #54c750;
     text-align: center;
     font-style: italic;
     padding: 1.5rem;

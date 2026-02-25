@@ -21,10 +21,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (upload: AccountCredentials): Promise<boolean> => {
     const response = await AuthService.login(upload);
 
-    if (!response.success) {
-      toast.error("Incorrect username or password.");
-      return false;
-    } else {
+    if (response.success) {
       const authed = await checkAuth();
 
       if (!authed) {
@@ -33,19 +30,23 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       toast.success(`Logged in successfully. Welcome back!`);
       return true;
+    } else {
+      toast.error("Incorrect username or password.");
+      return false;
     }
   };
 
   const logout = async () => {
     const response = await AuthService.logout();
 
-    if (!response.success) {
+    if (response.success) {
+      toast.success("Logged out successfully");
+    } else {
       toast.error("Failed to logout, Error message logged to console");
       console.error("Logout Error:", response.error);
-    } else {
-      toast.success("Logged out successfully");
-      setUser(null);
     }
+
+    setUser(null);
   };
 
   const checkAuth = async (): Promise<boolean> => {
@@ -68,7 +69,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
     };
 
-    initAuth();
+    initAuth().catch(console.error);
   }, []);
 
   return (

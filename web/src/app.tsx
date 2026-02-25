@@ -32,7 +32,7 @@ const App = () => {
       <RouterProvider router={router} />
       <ToastContainer
         position="top-left"
-        autoClose={5000}
+        autoClose={2500}
         pauseOnHover={true}
       />
     </AuthProvider>

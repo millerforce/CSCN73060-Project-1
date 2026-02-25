@@ -1,9 +1,16 @@
 .wrapper {
     display: flex;
     flex-direction: column;
-    border: 1px solid #e1e1e1;
     border-radius: 0.5rem;
     padding: 1rem;
+    background-color: #2a2a2a;
+    gap: 1rem;
+}
+
+.content {
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background-color: #1a1a1a;
 }
 
 .header {
