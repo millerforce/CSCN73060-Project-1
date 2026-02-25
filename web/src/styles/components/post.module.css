@@ -1,6 +1,6 @@
 
 .postCard {
-    border: 1px solid #e1e1e1;
+    /*border: 1px solid #e1e1e1;*/
     border-radius: 1rem;
     padding: 1rem;
     display: flex;
@@ -18,15 +18,19 @@
     flex-direction: column;
     gap: 0.75rem;
     cursor: pointer;
+    text-align: left;
+    padding: 1rem;
 }
 
 .author {
     font-weight: 600;
     font-size: 1rem;
+    color: #54c750;
 }
 
 .date {
-    font-size: 0.875rem;
+    font-size: 1rem;
+    color: #54c750;
 }
 
 .buttonContainer {

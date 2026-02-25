@@ -1,7 +1,6 @@
 .wrapper {
     display: flex;
     flex-direction: column;
-   
 }
 
 .form {
@@ -13,6 +12,10 @@
 .form label {
     color: #54c750;
     font-size: 1.25rem;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .form textarea {
@@ -22,10 +25,21 @@
     max-height: 10rem;
     resize: vertical;
     outline: none;
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
     padding: 0.625rem 0.75rem;
-    background-color: #3e3f3e;
-    border: 0.0625rem solid #333;
+    background-color: #2a2a2a;
+    border: none;
     line-height: 1.5;
     color: #f0f2f0;
+}
+
+.button {
+    font-weight: bold;
+    color: #54c750;
+}
+
+.error {
+    color: red;
+    font-weight: normal;
+    text-align: center;
 }

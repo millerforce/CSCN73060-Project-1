@@ -1,13 +1,20 @@
 .wrapper {
     display: flex;
     flex-direction: column;
-    background-color: #2a2a2a;
+    background-color: #1e1e1e;
     padding: 1.5rem;
-    min-width: 65%;
     margin-top: 1rem;
     gap: 1rem;
-    border: 1px solid #e1e1e1;
+    max-width: 40rem;
+    width: 100%;
     border-radius: 1rem;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #54c750;
 }
 
 .header {
@@ -19,12 +26,20 @@
 }
 
 .content {
-    border: 1px solid #e1e1e1;
     border-radius: 0.5rem;
     padding: 1rem;
+    background-color: #2a2a2a;
 }
 
 .commentSection {
     display: flex;
     flex-direction: column;
 }
+
+.emptyMessage {
+    text-align: center;
+    font-style: italic;
+    padding: 2rem;
+    color: #54c750;
+}
+
