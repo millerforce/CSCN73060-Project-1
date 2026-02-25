@@ -446,7 +446,7 @@ public class CommentServiceTest {
 
         Comment liked = commentService.likeComment("session=valid", commentId);
 
-        assertEquals(4L, liked.likeCount());
+        assertEquals(4L, liked.numberOfLikes());
         assertTrue(liked.likedByCurrentUser());
         verify(commentLikeRepository).save(any());
     }
