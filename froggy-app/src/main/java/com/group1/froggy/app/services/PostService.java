@@ -9,9 +9,7 @@ import com.group1.froggy.jpa.account.AccountJpa;
 import com.group1.froggy.jpa.account.session.SessionJpa;
 import com.group1.froggy.jpa.post.PostJpa;
 import com.group1.froggy.jpa.post.PostRepository;
-import com.group1.froggy.jpa.post.comment.CommentJpa;
 import com.group1.froggy.jpa.post.comment.CommentRepository;
-import com.group1.froggy.jpa.post.comment.like.CommentLikeRepository;
 import com.group1.froggy.jpa.post.like.PostLikeJpa;
 import com.group1.froggy.jpa.post.like.PostLikeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -38,7 +34,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
-    private final CommentLikeRepository commentLikeRepository;
 
     public List<Post> getPosts(String cookie, Integer lastNPosts, Integer offset) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
@@ -103,11 +98,6 @@ public class PostService {
             throw new IllegalActionException("Only the author can delete the post");
         }
 
-        List<CommentJpa> commentJpas = commentRepository.findCommentJpaByPostId(postId);
-        for (var comment : commentJpas) {
-            commentLikeRepository.deleteAllByComment(comment);
-        }
-        commentRepository.deleteAll(commentJpas);
         postLikeRepository.deleteAllByPost(postJpa);
         postRepository.delete(postJpa);
     }
@@ -135,21 +125,53 @@ public class PostService {
         long postLikes = postLikeRepository.countByPost(postJpa);
         long numberOfComments = commentRepository.countByPostId(postJpa.getId());
 
-        return new PostStats(slowFibonacci(postLikes + numberOfComments + 50));
+        return new PostStats(fastFibonacci(postLikes + numberOfComments + 50));
     }
 
-    private long slowFibonacci(long n) {
-        if (n <= 1) return n;
-        if (slowIsPrime(n)) {
+    public long fastFibonacci(long n) {
+        if (n <= 1) {
             return n;
         }
-        return slowFibonacci(n - 1) + slowFibonacci(n - 2);
+
+        long previousTwo = 0;
+        long previousOne = 1;
+        long current = 0;
+
+        // Build sequence iteratively from 2 up to n
+        for (long i = 2; i <= n; i++) {
+
+            // If the index itself is prime,
+            // we override the Fibonacci behavior and use i directly.
+            if (isPrime(i)) {
+                current = i;
+            } else {
+                // Otherwise compute modified Fibonacci normally
+                current = previousOne + previousTwo;
+            }
+
+            // Shift values forward for next iteration
+            previousTwo = previousOne;
+            previousOne = current;
+        }
+
+        return current;
     }
 
-    private boolean slowIsPrime(long num) {
-        if (num <= 1) return false;
-        for (long i = 2; i <= Math.sqrt(num); i++) {
-            if (num % i == 0) return false;
+    private boolean isPrime(long num) {
+        if (num <= 1) {
+            return false;
+        }
+        if (num <= 3) {
+            return true;
+        }
+        if (num % 2 == 0 || num % 3 == 0) {
+            return false;
+        }
+
+        for (long i = 5; i * i <= num; i += 6) {
+            if (num % i == 0 || num % (i + 2) == 0) {
+                return false;
+            }
         }
         return true;
     }
