@@ -27,6 +27,10 @@ import java.util.UUID;
 
 import static com.group1.froggy.app.controllers.AuthorizationController.COOKIE_HEADER;
 
+/**
+ * Controller providing endpoints to create, list, edit, delete and like posts,
+ * and to retrieve per-post statistics.
+ */
 @Slf4j
 @Validated
 @RestController
@@ -37,6 +41,14 @@ public class PostController {
 
     private final PostService postService;
 
+    /**
+     * Retrieve a paginated list of posts.
+     *
+     * @param cookie the session cookie header
+     * @param maxResults maximum number of posts to return (default 10, max 100)
+     * @param offset result offset for pagination (default 0)
+     * @return list of posts
+     */
     @GetMapping("/posts")
     @Operation(summary = "Get a list of Posts")
     @ApiResponse(responseCode = "200", description = "Posts retrieved successfully")
@@ -60,6 +72,13 @@ public class PostController {
         return postService.getPosts(cookie, maxResults, offset);
     }
 
+    /**
+     * Create a new post authored by the currently authenticated user.
+     *
+     * @param cookie the session cookie header
+     * @param content the post content payload
+     * @return the created Post
+     */
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "Create a new Post")
@@ -76,6 +95,14 @@ public class PostController {
         return postService.createPost(cookie, content);
     }
 
+    /**
+     * Edit an existing post. Only the author may edit.
+     *
+     * @param cookie the session cookie header
+     * @param postId the UUID of the post to edit
+     * @param content the updated post content
+     * @return the updated Post
+     */
     @PatchMapping("/{postId}")
     @Operation(summary = "Edit an existing Post")
     @ApiResponse(responseCode = "200", description = "Post edited successfully")
@@ -94,6 +121,12 @@ public class PostController {
         return postService.editPost(cookie, postId, content);
     }
 
+    /**
+     * Delete a post authored by the current user.
+     *
+     * @param cookie the session cookie header
+     * @param postId the UUID of the post to delete
+     */
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{postId}")
     @Operation(summary = "Delete an existing Post")
@@ -112,6 +145,13 @@ public class PostController {
         postService.deletePost(cookie, postId);
     }
 
+    /**
+     * Like (or toggle like) on a post by the current user.
+     *
+     * @param cookie the session cookie header
+     * @param postId the UUID of the post to like
+     * @return the updated Post reflecting the like
+     */
     @PutMapping("/{postId}")
     @Operation(summary = "Like a Post")
     @ApiResponse(responseCode = "200", description = "Post liked successfully")
@@ -128,6 +168,14 @@ public class PostController {
         return postService.likePost(cookie, postId);
     }
 
+    /**
+     * Retrieve statistics for a post (e.g. trending score). This is intended
+     * to be an expensive operation for load testing.
+     *
+     * @param cookie the session cookie header
+     * @param postId the UUID of the post to compute stats for
+     * @return PostStats containing computed metrics for the post
+     */
     @GetMapping("/{postId}/stats")
     @Operation(summary = "Get statistics for a Post. Currently only includes a trending score. Designed to be an expensive operation for load testing purposes.")
     @ApiResponse(responseCode = "200", description = "Post statistics retrieved successfully")

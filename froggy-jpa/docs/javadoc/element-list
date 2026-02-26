@@ -1,0 +1,6 @@
+com.group1.froggy.jpa.account
+com.group1.froggy.jpa.account.session
+com.group1.froggy.jpa.post
+com.group1.froggy.jpa.post.comment
+com.group1.froggy.jpa.post.comment.like
+com.group1.froggy.jpa.post.like

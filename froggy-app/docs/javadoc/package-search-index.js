@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.group1.froggy.app"},{"l":"com.group1.froggy.app.config"},{"l":"com.group1.froggy.app.controllers"},{"l":"com.group1.froggy.app.exceptions"},{"l":"com.group1.froggy.app.services"}];updateSearchResults();

@@ -33,6 +33,13 @@ public class AuthorizationService {
 
     public static final String SESSION_COOKIE = "session";
 
+    /**
+     * Create a new account.
+     *
+     * @param accountCredentials credentials containing desired username and password
+     * @return the created Account representation
+     * @throws EntityExistsException if an account with the same username already exists
+     */
     public Account createAccount(AccountCredentials accountCredentials) {
         if (accountRepository.existsByUsername(accountCredentials.username())) {
             throw new EntityExistsException("Account with username already exists");
@@ -45,6 +52,17 @@ public class AuthorizationService {
         return accountRepository.save(accountJpa).toAccount();
     }
 
+    /**
+     * Authenticate user credentials and create a session cookie.
+     *
+     * This method validates the provided credentials, generates and persists a session token,
+     * and returns an HTTP response with a Set-Cookie header containing the session value.
+     *
+     * @param credentials username and password to authenticate
+     * @return ResponseEntity with Set-Cookie header on success (HTTP 200)
+     * @throws EntityNotFoundException if the account with the given username does not exist
+     * @throws InvalidCredentialsException if the password is incorrect
+     */
     public ResponseEntity<Void> loginAccount(AccountCredentials credentials) {
         AccountJpa accountJpa = accountRepository.findByUsername(credentials.username())
             .orElseThrow(() -> new EntityNotFoundException("Account with username does not exist"));
@@ -65,6 +83,14 @@ public class AuthorizationService {
             .build();
     }
 
+    /**
+     * Logout the user by deleting the session referenced in the provided cookie and
+     * returning a cleared session cookie (max-age 0).
+     *
+     * @param cookie raw Cookie header value from the request
+     * @return ResponseEntity with cleared session cookie (HTTP 204)
+     * @throws InvalidCredentialsException when no valid session cookie is present or token is invalid
+     */
     public ResponseEntity<Void> logoutAccount(String cookie) {
         Session session = parseSessionCookie(cookie);
         if (session == null) {
@@ -89,6 +115,13 @@ public class AuthorizationService {
             .build();
     }
 
+    /**
+     * Return the Account associated with the session cookie value.
+     *
+     * @param cookie raw Cookie header value from the request
+     * @return Account corresponding to the session
+     * @throws InvalidCredentialsException when cookie is missing, malformed, or token is invalid
+     */
     public Account getCurrentAccount(String cookie) {
         if (cookie == null) {
             throw new InvalidCredentialsException("No session cookie found");
@@ -112,6 +145,16 @@ public class AuthorizationService {
         return Base64.getEncoder().encodeToString(token);
     }
 
+    /**
+     * Validate the given cookie and return the persisted SessionJpa entity.
+     *
+     * This will throw InvalidCredentialsException when the cookie is missing or malformed,
+     * or when the token does not correspond to a stored session.
+     *
+     * @param cookie raw Cookie header value from the request
+     * @return SessionJpa representing the stored session
+     * @throws InvalidCredentialsException when cookie is missing, malformed, or token not found
+     */
     public SessionJpa validateSession(String cookie) {
         if (cookie == null) {
             throw new InvalidCredentialsException("No session cookie found");
@@ -124,6 +167,12 @@ public class AuthorizationService {
             .orElseThrow(() -> new InvalidCredentialsException("Invalid token"));
     }
 
+    /**
+     * Quick check whether the provided cookie represents an existing, valid session.
+     *
+     * @param cookie raw Cookie header value from the request
+     * @return true when a valid session exists for the cookie, false otherwise
+     */
     public boolean isValidSession(String cookie) {
         if (cookie == null) {
             return false;

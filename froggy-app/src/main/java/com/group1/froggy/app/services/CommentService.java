@@ -32,6 +32,14 @@ public class CommentService {
     private final AuthorizationService authorizationService;
     private final CommentLikeRepository commentLikeRepository;
 
+    /**
+     * Retrieve comments for a post for an authorized session.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param postId id of the post to fetch comments for
+     * @return list of Comment DTOs including like counts and whether the current user liked each comment
+     * @throws com.group1.froggy.app.exceptions.InvalidCredentialsException when the session is invalid or missing
+     */
     public List<Comment> getCommentsByPost(String cookie, UUID postId) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
@@ -40,6 +48,16 @@ public class CommentService {
             .toList();
     }
 
+    /**
+     * Create a new comment on a post authored by the account associated with the provided session cookie.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param postId id of the post to comment on
+     * @param content content payload for the new comment
+     * @return created Comment DTO including metadata and like counts
+     * @throws EntityNotFoundException when the post cannot be found
+     * @throws com.group1.froggy.app.exceptions.InvalidCredentialsException when the session is invalid or missing
+     */
     public Comment createComment(String cookie, UUID postId, Content content) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
@@ -58,6 +76,16 @@ public class CommentService {
         return toCommentWithLikes(sessionJpa.getAccount(), commentJpa);
     }
 
+    /**
+     * Edit an existing comment. Only the author may edit their comment.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param commentId id of the comment to edit
+     * @param content new content for the comment
+     * @return updated Comment DTO
+     * @throws EntityNotFoundException when the comment cannot be found
+     * @throws com.group1.froggy.app.exceptions.InvalidCredentialsException when the session is invalid or missing
+     */
     public Comment editComment(String cookie, UUID commentId, Content content) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
@@ -70,6 +98,14 @@ public class CommentService {
         return toCommentWithLikes(sessionJpa.getAccount(), commentRepository.save(commentJpa));
     }
 
+    /**
+     * Delete an existing comment authored by the requesting account.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param commentId id of the comment to delete
+     * @throws EntityNotFoundException when the comment cannot be found
+     * @throws IllegalActionException when the requesting account is not the author
+     */
     public void deleteComment(String cookie, UUID commentId) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
@@ -83,6 +119,14 @@ public class CommentService {
         commentRepository.delete(commentJpa);
     }
 
+    /**
+     * Add a like from the current user to the specified comment.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param commentId id of the comment to like
+     * @return Comment DTO reflecting the updated like count and whether the current user liked it
+     * @throws EntityNotFoundException when the comment cannot be found
+     */
     public Comment likeComment(String cookie, UUID commentId) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 

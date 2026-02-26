@@ -1,0 +1,5 @@
+com.group1.froggy.app
+com.group1.froggy.app.config
+com.group1.froggy.app.controllers
+com.group1.froggy.app.exceptions
+com.group1.froggy.app.services

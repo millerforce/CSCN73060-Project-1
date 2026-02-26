@@ -23,6 +23,13 @@ import java.util.UUID;
 
 import static com.group1.froggy.app.controllers.AuthorizationController.COOKIE_HEADER;
 
+/**
+ * Controller that exposes CRUD operations for comments on posts.
+ *
+ * <p>All endpoints expect a session cookie (unless otherwise documented) and
+ * will throw a 401 if it's missing. Responses conform to the project's
+ * ProblemDetail/ValidationDetail formats on errors.</p>
+ */
 @Slf4j
 @Validated
 @RestController
@@ -33,6 +40,13 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    /**
+     * Retrieve all comments for the given post.
+     *
+     * @param cookie the session cookie header
+     * @param postId the UUID of the post to list comments for
+     * @return list of comments for the post
+     */
     @Operation(summary = "Get all comments for a post", description = "Retrieves a list of comments associated with a specific post.")
     @ApiResponse(responseCode = "200", description = "Comments retrieved successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
@@ -51,6 +65,14 @@ public class CommentController {
         return commentService.getCommentsByPost(cookie, postId);
     }
 
+    /**
+     * Create a new comment for the specified post.
+     *
+     * @param cookie the session cookie header
+     * @param postId the UUID of the post to comment on
+     * @param content the comment content payload
+     * @return the created Comment
+     */
     @Operation(summary = "Create a new comment for a post", description = "Creates a new comment associated with a specific post. Requires authentication.")
     @ApiResponse(responseCode = "201", description = "Comment created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
@@ -76,6 +98,14 @@ public class CommentController {
         return commentService.createComment(cookie, postId, content);
     }
 
+    /**
+     * Edit an existing comment. Only the comment author may edit.
+     *
+     * @param cookie the session cookie header
+     * @param commentId the UUID of the comment to edit
+     * @param content the new comment content
+     * @return the updated Comment
+     */
     @Operation(summary = "Edit an existing comment", description = "Edits the content of an existing comment. Only the author of the comment can edit it. Requires authentication.")
     @ApiResponse(responseCode = "200", description = "Comment edited successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
@@ -101,6 +131,12 @@ public class CommentController {
         return commentService.editComment(cookie, commentId, content);
     }
 
+    /**
+     * Delete an existing comment. Only the comment author may delete.
+     *
+     * @param cookie the session cookie header
+     * @param commentId the UUID of the comment to delete
+     */
     @Operation(summary = "Delete an existing comment", description = "Deletes an existing comment. Only the author of the comment can delete it. Requires authentication.")
     @ApiResponse(responseCode = "204", description = "Comment deleted successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
@@ -122,6 +158,13 @@ public class CommentController {
         commentService.deleteComment(cookie, commentId);
     }
 
+    /**
+     * Like (or toggle like) on a comment by the currently authenticated user.
+     *
+     * @param cookie the session cookie header
+     * @param commentId the UUID of the comment to like
+     * @return the updated Comment with like changes applied
+     */
     @Operation(summary = "Like a comment", description = "Likes a comment. Requires authentication.")
     @ApiResponse(responseCode = "200", description = "Comment liked successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = MinimalValidationDetail.class))})

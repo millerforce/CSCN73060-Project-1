@@ -49,4 +49,32 @@
 		</dependencies>
 	</dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+
+                <configuration>
+                    <reportOutputDirectory>
+                        ${basedir}/docs
+                    </reportOutputDirectory>
+                    <destDir>javadoc</destDir>
+                    <doclint>none</doclint>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>aggregate</id>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                        <phase>site</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

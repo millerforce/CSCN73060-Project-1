@@ -35,6 +35,15 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
 
+    /**
+     * Retrieve a paginated list of posts for an authorized session.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param lastNPosts how many posts to return (defaults to 10 when null or <= 0)
+     * @param offset number of posts to skip (defaults to 0 when null or < 0)
+     * @return list of Post DTOs including like/comment counts and whether the current user liked each post
+     * @throws InvalidCredentialsException when the session is invalid or missing
+     */
     public List<Post> getPosts(String cookie, Integer lastNPosts, Integer offset) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
@@ -62,6 +71,14 @@ public class PostService {
             .toList();
     }
 
+    /**
+     * Create a new post authored by the account associated with the provided session cookie.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param content content payload for the new post
+     * @return created Post DTO including metadata and like/comment counts
+     * @throws InvalidCredentialsException when the session is invalid or missing
+     */
     public Post createPost(String cookie, Content content) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
@@ -72,6 +89,16 @@ public class PostService {
         return toPostWithLikes(sessionJpa.getAccount(), postJpa);
     }
 
+    /**
+     * Edit an existing post if the requesting account is the author.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param postId id of the post to edit
+     * @param content new content for the post
+     * @return updated Post DTO
+     * @throws EntityNotFoundException when the post cannot be found
+     * @throws IllegalActionException when the requesting account is not the author
+     */
     public Post editPost(String cookie, UUID postId, Content content) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
@@ -88,6 +115,14 @@ public class PostService {
         return toPostWithLikes(sessionJpa.getAccount(), postRepository.save(postJpa));
     }
 
+    /**
+     * Delete an existing post authored by the requesting account.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param postId id of the post to delete
+     * @throws EntityNotFoundException when the post cannot be found
+     * @throws IllegalActionException when the requesting account is not the author
+     */
     public void deletePost(String cookie, UUID postId) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
@@ -102,6 +137,14 @@ public class PostService {
         postRepository.delete(postJpa);
     }
 
+    /**
+     * Add a like from the current user to the specified post.
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param postId id of the post to like
+     * @return Post DTO reflecting the updated like count and whether the current user liked it
+     * @throws EntityNotFoundException when the post cannot be found
+     */
     public Post likePost(String cookie, UUID postId) {
         SessionJpa sessionJpa = authorizationService.validateSession(cookie);
 
@@ -114,6 +157,15 @@ public class PostService {
         return toPostWithLikes(sessionJpa.getAccount(), postJpa);
     }
 
+    /**
+     * Compute stats for a post. Requires a valid session (quick validation).
+     *
+     * @param cookie raw Cookie header value used to validate the session
+     * @param postId id of the post to compute stats for
+     * @return PostStats DTO containing computed stat value
+     * @throws InvalidCredentialsException when the session cookie is invalid
+     * @throws EntityNotFoundException when the post cannot be found
+     */
     public PostStats getPostStats(String cookie, UUID postId) {
         if (!authorizationService.isValidSession(cookie)) {
             throw new InvalidCredentialsException("Invalid session cookie");
@@ -128,7 +180,7 @@ public class PostService {
         return new PostStats(fastFibonacci(postLikes + numberOfComments + 50));
     }
 
-    public long fastFibonacci(long n) {
+    private long fastFibonacci(long n) {
         if (n <= 1) {
             return n;
         }

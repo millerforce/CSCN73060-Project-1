@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.group1.froggy.jpa.account"},{"l":"com.group1.froggy.jpa.account.session"},{"l":"com.group1.froggy.jpa.post"},{"l":"com.group1.froggy.jpa.post.comment"},{"l":"com.group1.froggy.jpa.post.comment.like"},{"l":"com.group1.froggy.jpa.post.like"}];updateSearchResults();
