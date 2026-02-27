@@ -6,6 +6,7 @@ interface ButtonProps {
   onClick?: () => void;
   iconString?: string;
   text?: string;
+  clickable?: boolean;
 }
 
 export default function Button({
@@ -14,11 +15,16 @@ export default function Button({
   onClick,
   iconString,
   text,
+  clickable = true,
 }: Readonly<ButtonProps>) {
   return (
-    <button className={styles.button} disabled={disabled} onClick={onClick}>
+    <button
+      className={`${styles.button} ${clickable ? "" : styles.nonClickable}`}
+      disabled={disabled}
+      onClick={onClick}
+    >
       <span className="material-symbols-outlined">{iconString}</span>
-      {count}
+      <div>{count}</div>
       {text}
     </button>
   );
