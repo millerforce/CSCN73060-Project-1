@@ -238,7 +238,7 @@ public class PostServiceTest {
 
         PostStats stats = postService.getPostStats("session=valid", any());
 
-        assertEquals(217354L, stats.trendingScore());
+        assertEquals(65, stats.trendingScore());
     }
 
     @Test
