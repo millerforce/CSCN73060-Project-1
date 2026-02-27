@@ -63,7 +63,11 @@ export function PostCard({
             count={post.numberOfLikes}
             disabled={post.likedByCurrentUser}
           />
-          <Button count={post.numberOfComments} iconString={"comment"} />
+          <Button
+            clickable={false}
+            count={post.numberOfComments}
+            iconString={"comment"}
+          />
         </div>
         {isOwner && (
           <Button iconString={"delete"} onClick={() => onDelete(post.id)} />
