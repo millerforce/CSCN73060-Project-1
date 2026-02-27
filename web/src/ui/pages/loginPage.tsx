@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import type { AccountCredentials } from "../../http/types/account.ts";
 import { useAuth } from "../../auth/authProvider.tsx";
 import { NavLink, useNavigate } from "react-router";
+import ImageWrapper from "../components/imageWrapper.tsx";
 
 export default function LoginPage() {
   const {
@@ -23,7 +24,11 @@ export default function LoginPage() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.content}>
-        <div className={styles.title}>Welcome to Froggy</div>
+        <div className={styles.header}>
+          <div className={styles.title}>Welcome to Froggy</div>
+          <ImageWrapper src={"/images/froggy.png"} width={60} height={50} />
+        </div>
+
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.item}>
             <label>Username</label>

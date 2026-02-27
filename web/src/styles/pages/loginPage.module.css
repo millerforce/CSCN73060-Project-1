@@ -17,6 +17,14 @@
     max-width: 30rem;
 }
 
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+    text-align: center;
+}
+
 .title {
     font-size: xx-large;
     font-weight: bolder;
