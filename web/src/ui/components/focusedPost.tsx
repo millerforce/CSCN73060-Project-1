@@ -28,6 +28,7 @@ export default function FocusedPost({
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(post.content);
   const [isSaving, setIsSaving] = useState(false);
+  const [trendingScore, setTrendingScore] = useState<number | null>(null);
 
   const date = useMemo(
     () =>
@@ -56,7 +57,19 @@ export default function FocusedPost({
       }
     };
 
+    const fetchScore = async () => {
+      const response = await PostService.getPostTrendingScore(post.id);
+
+      if (response.success) {
+        setTrendingScore(response.data.trendingScore);
+      } else {
+        toast.error("Failed to fetch trending score");
+        console.error(response.error);
+      }
+    };
+
     fetchComments().catch(console.error);
+    fetchScore().catch(console.error);
   }, [post]);
 
   const handleCommentDelete = async (commentId: string) => {
@@ -168,6 +181,12 @@ export default function FocusedPost({
             count={post.numberOfLikes}
           />
           <Button iconString={"comment"} count={post.numberOfComments} />
+          <Button
+            clickable={false}
+            iconString={"trending_up"}
+            count={trendingScore ?? undefined}
+            text={"Pond Presence"}
+          />
         </div>
 
         {isOwner && (
