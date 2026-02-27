@@ -15,7 +15,6 @@ export default function PostPage() {
   const FETCHSIZE = 10;
 
   const [posts, setPosts] = useState<Post[]>([]);
-  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
@@ -31,11 +30,13 @@ export default function PostPage() {
 
   const fetchPosts = async () => {
     if (loading || !hasMore) return;
+
     setLoading(true);
+
     try {
       const result = await PostService.getPosts({
         maxResults: FETCHSIZE,
-        offset,
+        offset: posts.length, // ← derive offset here
       });
 
       if (!result.success) {
@@ -43,15 +44,15 @@ export default function PostPage() {
         return;
       }
 
-      setPosts((prev) => {
-        const existingIds = new Set(prev.map((p) => p.id));
-        const newPosts = result.data.filter((p) => !existingIds.has(p.id));
-        return [...prev, ...newPosts];
-      });
-      setOffset((prev) => prev + FETCHSIZE);
       if (result.data.length < FETCHSIZE) {
         setHasMore(false);
       }
+
+      setPosts((prev) => {
+        const existing = new Set(prev.map((p) => p.id));
+        const filtered = result.data.filter((p) => !existing.has(p.id));
+        return [...prev, ...filtered];
+      });
     } catch (error) {
       toast.error("Unexpected error fetching posts");
       console.error(error);
@@ -62,7 +63,6 @@ export default function PostPage() {
 
   useEffect(() => {
     setPosts([]);
-    setOffset(0);
     fetchPosts().catch(console.error);
   }, []);
 

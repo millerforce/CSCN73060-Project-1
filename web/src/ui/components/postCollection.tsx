@@ -40,7 +40,7 @@ export default function PostCollection({
 
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [posts, onLoadMore]);
+  }, [onLoadMore]);
 
   return (
     <div className={styles.wrapper}>
